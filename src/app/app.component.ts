@@ -6,5 +6,9 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  title = 'nono';
+  constructor() {
+    document.addEventListener('contextmenu', (e) => {
+      e.preventDefault();
+    }, false);
+  }
 }

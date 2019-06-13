@@ -1,0 +1,50 @@
+<!--The content below is only a placeholder and can be replaced.-->
+<div *ngIf="startPageOpen" fadeAnimation style="display: block">
+  <div class="start-display">
+    <span><em>nonogram</em></span>
+  </div>
+  <div class="start-display-options">
+    <div class="input-item-margin">
+      Number of rows: <input class="start-input" size="1" min="0" max="15" type="number" name="rows" [(ngModel)]="rowCount">
+    </div>
+    <div class="input-item-margin">
+      Number of columns: <input class="start-input" size="1" min="0" max="15" type="number" name="columns" [(ngModel)]="columnCount">
+    </div>
+    <div>
+      <button type="button" class="start-button" (click)="startClick()">Start</button>
+    </div>
+  </div>
+</div>
+<div *ngIf="!startPageOpen" style="height: 100%;">
+  <div class="game-table-parent">
+    <table class="game-table">
+      <tr>
+        <td></td>
+        <td *ngFor="let colNumCollection of currentGameData.colNumbers" class="number-cell">
+          <div class="bottom-align">
+            <div *ngFor="let numVal of colNumCollection" class="number-inner-cell-display-top">
+              <div>{{ numVal }}</div>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr *ngFor="let row of currentGameData.squareProperties; let rowIndex = index;">
+        <td>
+          <div *ngFor="let numVal of currentGameData.rowNumbers[rowIndex]" class="number-inner-cell-display-left">{{ numVal }}</div>
+        </td>
+        <td *ngFor="let col of row"
+            class="game-cell"
+            [style.background-color]="getBackgroundColor(col, rowIndex)"
+            (click)="gameCellClick(col)"
+            (middleclick)="gameCellMiddleClick(col)"
+            (contextmenu)="gameCellRightClick(col)">
+          <div class="inner-cell-display">
+            <div *ngIf="col.currentSelectionType === squareOptionsEnum.Marked" style="height: 80%; width: 80%; margin: auto;">
+              <img style="width:100%; height:100%;" src="assets/baseline-help_outline-24px.svg">
+            </div>
+          </div>
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>

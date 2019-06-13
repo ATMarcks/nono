@@ -1,0 +1,110 @@
+.start-display {
+  display: flex;
+  height: 300px;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: .5em;
+
+  color: white;
+  font-size: calc(10px + 12vw);
+}
+
+.start-display-options {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  color: white;
+  font-size: calc(10px + 3vw);
+}
+
+.start-button {
+  background-color: Transparent;
+  background-repeat:no-repeat;
+  border-radius: 25px;
+  border: 3px solid white;
+  padding: 15px;
+  cursor:pointer;
+  overflow: hidden;
+  outline:none;
+  color: white;
+  font-size: calc(10px + 2vw);
+  font-weight: bold;
+}
+
+.input-item-margin {
+  margin-bottom: 1em;
+}
+
+.start-input {
+  border: 0;
+  outline: 0;
+  background: transparent;
+  border-bottom: 3px solid white;
+  color: white;
+  font-size: calc(10px + 1vw + 1vh);
+  width: 1.5em;
+}
+
+.game-table-parent {
+  display: flex;
+  justify-content: center;
+}
+
+.game-table {
+  border: calc(1px + 0.10vh + 0.06vw) solid black;
+  border-radius: calc(.5vh + .3vw);
+  background-color: black;
+  transform: scale(0.8);
+}
+
+.game-cell {
+  transition: background-color 100ms linear;
+  background-color: #919FA8;
+  border-radius: calc(.5vh + .3vw);
+  height: calc(1px + 2.3vh + 1.3vw);
+  width: calc(1px + 2.3vh + 1.3vw);;
+  border: calc(1px + 0.10vh + 0.06vw) solid black;
+}
+
+
+.inner-cell-display {
+  margin: auto;
+  overflow: hidden;
+  color: white;
+}
+
+.number-inner-cell-display-top {
+  color: white;
+  font-size: calc(1vw + 1vh);
+  margin: 0 auto;
+}
+
+.number-inner-cell-display-left {
+  color: white;
+  font-size: calc(1vw + 1vh);
+  float: right;
+  padding-left: calc(.5vw + .5vh);
+}
+
+.assist-text {
+  float: right;
+  color: white;
+  padding-top: 3px;
+}
+
+.assist-text:hover {
+  cursor: pointer;
+}
+
+.bottom-align {
+  display: flex;
+  align-items: flex-end;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.number-cell {
+  vertical-align: bottom;
+  text-align: center;
+}
