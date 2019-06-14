@@ -1,7 +1,8 @@
 export enum SquareOptions {
-  Selected,
-  Crossed,
-  Marked
+  Selected, // Square is selected
+  Crossed, // Square is marked out
+  Marked, // Square has a note symbol on it
+  Error // Selection made in error
 }
 
 
@@ -24,4 +25,5 @@ export interface GameData {
     hidden: boolean;
   };
   solved: boolean;
+  assist: boolean;
 }

@@ -52,11 +52,15 @@
             <div style="height: 80%; width: 80%; margin: auto;">
               <img *ngIf="col.currentSelectionType === squareOptionsEnum.Marked" class="cell-icon" src="assets/baseline-help_outline-24px.svg">
               <img *ngIf="col.currentSelectionType === squareOptionsEnum.Crossed" class="cell-icon" src="assets/baseline-clear-24px.svg">
+              <img *ngIf="col.currentSelectionType === squareOptionsEnum.Error" class="cell-icon" src="assets/baseline-highlight_off-24px.svg">
             </div>
           </div>
         </td>
       </tr>
     </table>
-    Solved: {{ currentGameData.solved }}
+    <div style="width: 100%;">
+      <div style="float: left;">Solved: {{ currentGameData.solved }}</div>
+      <div class="assist-text" (click)="assistToggle()">Assist: {{ currentGameData.assist ? 'On': 'Off' }}</div>
+    </div>
   </div>
 </div>

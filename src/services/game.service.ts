@@ -67,7 +67,8 @@ export class GameService {
         y: 0,
         hidden: true
       },
-      solved: false
+      solved: false,
+      assist: false,
     };
   }
 

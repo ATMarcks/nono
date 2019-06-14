@@ -114,8 +114,12 @@ export class StartPageComponent implements OnDestroy {
   gameCellClick(squareProps): void {
     if ([SquareOptions.Selected, SquareOptions.Crossed].includes(squareProps.currentSelectionType)) {
       squareProps.currentSelectionType = null;
-    } else if (squareProps.currentSelectionType === null || squareProps.currentSelectionType === SquareOptions.Marked) {
-      squareProps.currentSelectionType = SquareOptions.Selected;
+    } else if ([null, SquareOptions.Marked, SquareOptions.Error].includes(squareProps.currentSelectionType)) {
+      if (this.currentGameData.assist && !squareProps.squareSolution) {
+        squareProps.currentSelectionType = SquareOptions.Error;
+      } else {
+        squareProps.currentSelectionType = SquareOptions.Selected;
+      }
     }
 
     // check if solved
@@ -146,8 +150,12 @@ export class StartPageComponent implements OnDestroy {
   gameCellRightClick(squareProps): void {
     if ([SquareOptions.Selected, SquareOptions.Crossed].includes(squareProps.currentSelectionType)) {
       squareProps.currentSelectionType = null;
-    } else if (squareProps.currentSelectionType === null || squareProps.currentSelectionType === SquareOptions.Marked) {
-      squareProps.currentSelectionType = SquareOptions.Crossed;
+    } else if ([SquareOptions.Marked, null, SquareOptions.Error].includes(squareProps.currentSelectionType)) {
+      if (this.currentGameData.assist && squareProps.squareSolution) {
+        squareProps.currentSelectionType = SquareOptions.Error;
+      } else {
+        squareProps.currentSelectionType = SquareOptions.Crossed;
+      }
     }
   }
 
@@ -203,6 +211,15 @@ export class StartPageComponent implements OnDestroy {
     }
 
     return '#000000';
+  }
+
+  assistToggle(): void {
+    // TODO: If we are toggling it on, do a check on all cells
+    if (!this.currentGameData.assist) {
+      console.log('! assist toggle');
+    }
+
+    this.currentGameData.assist = !this.currentGameData.assist;
   }
 
   startClick(): void {
