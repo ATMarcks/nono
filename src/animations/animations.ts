@@ -7,8 +7,12 @@ import {
 } from '@angular/animations';
 
 export const fadeAnimation = trigger('fadeAnimation', [
-  // the "in" style determines the "resting" state of the element when it is visible.
-  transition('void => final', [
-    animate('500ms ease-in')
-  ])
+  transition(':enter', [
+    style({ opacity: 1 }),
+    animate(300)
+  ]),
+  transition(':leave', [
+    animate(300, style({ opacity: 0 }))
+  ]),
+  state('*', style({ opacity: 0 })),
 ]);

@@ -1,3 +1,8 @@
+@keyframes fadein {
+  from { opacity: 0}
+  to   { opacity: 1}
+}
+
 .start-display {
   display: flex;
   height: 300px;
@@ -67,7 +72,6 @@
   border: calc(1px + 0.10vh + 0.06vw) solid black;
 }
 
-
 .inner-cell-display {
   margin: auto;
   overflow: hidden;
@@ -77,6 +81,7 @@
 .number-inner-cell-display-top {
   color: white;
   font-size: calc(1vw + 1vh);
+  padding-bottom: calc(.2vw + .2vh);
   margin: 0 auto;
 }
 
@@ -84,7 +89,7 @@
   color: white;
   font-size: calc(1vw + 1vh);
   float: right;
-  padding-left: calc(.5vw + .5vh);
+  padding-right: calc(.5vw + .5vh);
 }
 
 .assist-text {
@@ -104,7 +109,17 @@
   justify-content: center;
 }
 
-.number-cell {
+.number-cell-top {
   vertical-align: bottom;
   text-align: center;
+  padding-top: calc(.2vw + .2vh);
+}
+
+.number-cell-left {
+  padding-left: calc(.5vw + .5vh);
+}
+
+.cell-icon {
+  width: 100%;
+  height: 100%;
 }

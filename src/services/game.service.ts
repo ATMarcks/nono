@@ -29,7 +29,7 @@ export class GameService {
           currentSelectionType: null,
         });
       }
-      newGame.rowNumbers.push(this.generateDisplayNumbers(...row.map(r => r.squareSolution)));
+      newGame.rowNumbers.push(this.generateDisplayNumbers(...row.map(r => r.squareSolution).reverse()));
       console.log(newGame.rowNumbers);
       newGameSquareProperties.push(row);
     }
@@ -58,6 +58,11 @@ export class GameService {
       squareProperties: [[]],
       colNumbers: [[]],
       rowNumbers: [[]],
+      cursor: {
+        x: 0,
+        y: 0,
+        hidden: true
+      }
     };
   }
 

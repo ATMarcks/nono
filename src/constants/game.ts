@@ -14,4 +14,9 @@ export interface GameData {
   }[][];
   colNumbers: number[][];
   rowNumbers: number[][];
+  cursor: {
+    x: number;
+    y: number;
+    hidden: boolean;
+  };
 }

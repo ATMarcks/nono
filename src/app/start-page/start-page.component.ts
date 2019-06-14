@@ -1,4 +1,4 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, HostListener } from '@angular/core';
 import { Subscription } from 'rxjs';
 
 import { fadeAnimation } from '../../animations/animations';
@@ -30,12 +30,35 @@ export class StartPageComponent implements OnDestroy {
     this.newGameSub.unsubscribe();
   }
 
+  @HostListener('document:keydown', ['$event'])
+  keyPress(event: KeyboardEvent) {
+    console.log({event});
+  }
+
   gameCellClick(col): void {
-    col.currentSelectionType = SquareOptions.Selected;
+    if (col.currentSelectionType === SquareOptions.Selected || col.currentSelectionType === SquareOptions.Crossed) {
+      col.currentSelectionType = null;
+    } else if (col.currentSelectionType === null || col.currentSelectionType === SquareOptions.Marked) {
+      col.currentSelectionType = SquareOptions.Selected;
+    }
+  }
+
+  gameCellMiddleClick(col): void {
+    if (![SquareOptions.Selected, SquareOptions.Crossed].includes(col.currentSelectionType)) {
+      if (col.currentSelectionType === null) {
+        col.currentSelectionType = SquareOptions.Marked;
+      } else {
+        col.currentSelectionType = null;
+      }
+    }
   }
 
   gameCellRightClick(col): void {
-    col.currentSelectionType = SquareOptions.Crossed;
+    if ([SquareOptions.Selected, SquareOptions.Crossed].includes(col.currentSelectionType)) {
+      col.currentSelectionType = null;
+    } else if (col.currentSelectionType === null || col.currentSelectionType === SquareOptions.Marked) {
+      col.currentSelectionType = SquareOptions.Crossed;
+    }
   }
 
   getBackgroundColor(col, rowIndex) {
@@ -49,8 +72,8 @@ export class StartPageComponent implements OnDestroy {
     }
   }
 
-  gameCellMiddleClick(col): void {
-    col.currentSelectionType = SquareOptions.Marked;
+  gameKeypress(e) {
+    console.log({e});
   }
 
   startClick(): void {
