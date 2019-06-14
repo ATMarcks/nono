@@ -11,7 +11,7 @@
   margin-bottom: .5em;
 
   color: white;
-  font-size: calc(10px + 12vw);
+  font-size: calc(10px + 10vw);
 }
 
 .start-display-options {
@@ -20,7 +20,7 @@
   align-items: center;
   flex-direction: column;
   color: white;
-  font-size: calc(10px + 3vw);
+  font-size: calc(10px + 1vw + 1vh);
 }
 
 .start-button {
@@ -33,7 +33,7 @@
   overflow: hidden;
   outline:none;
   color: white;
-  font-size: calc(10px + 2vw);
+  font-size: calc(10px + 1.7vw);
   font-weight: bold;
 }
 
@@ -54,22 +54,25 @@
 .game-table-parent {
   display: flex;
   justify-content: center;
+  flex: 1;
+  overflow-y: auto;
+  align-items: center;
 }
 
 .game-table {
-  border: calc(1px + 0.10vh + 0.06vw) solid black;
-  border-radius: calc(.5vh + .3vw);
+  margin-top: 3vh;
+  border: calc(1px + 0.16vh + 0.2vw) solid black;
+  border-radius: calc(.4vh + .2vw);
   background-color: black;
-  transform: scale(0.8);
 }
 
 .game-cell {
-  transition: background-color 100ms linear;
+  transition: background-color 100ms linear, border 50ms linear;
   background-color: #919FA8;
-  border-radius: calc(.5vh + .3vw);
-  height: calc(1px + 2.3vh + 1.3vw);
-  width: calc(1px + 2.3vh + 1.3vw);;
-  border: calc(1px + 0.10vh + 0.06vw) solid black;
+  border-radius: calc(.4vh + .2vw);
+  height: calc(1px + 1.8vh + 0.7vw);
+  width: calc(1px + 1.8vh + 0.7vw);;
+  border: calc(1px + 0.10vh + 0.06vw) solid;
 }
 
 .inner-cell-display {
@@ -80,16 +83,17 @@
 
 .number-inner-cell-display-top {
   color: white;
-  font-size: calc(1vw + 1vh);
+  font-size: calc(.8vw + .7vh);
   padding-bottom: calc(.2vw + .2vh);
   margin: 0 auto;
 }
 
 .number-inner-cell-display-left {
   color: white;
-  font-size: calc(1vw + 1vh);
+  font-size: calc(.8vw + .7vh);
   float: right;
   padding-right: calc(.5vw + .5vh);
+  display:inline-block;
 }
 
 .assist-text {

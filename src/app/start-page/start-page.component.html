@@ -13,10 +13,17 @@
     <div>
       <button type="button" class="start-button" (click)="startClick()">Start</button>
     </div>
+    <div style="font-size: 16px !important;">
+      <br/>
+      Keyboard navigation: (a, s, d) -> (select square, cross square, mark square)<br>
+      Arrow keys to move<br><br>
+      Hover navigation: (z, x, d) -> (select square, cross square, mark square) OR<br>
+      Mouse navigation (left click, right click, middle click) -> (select square, cross square, mark square)
+    </div>
   </div>
 </div>
 <div *ngIf="!startPageOpen" style="height: 100%;" (keydown)="gameKeyPress($event)">
-  <div class="game-table-parent">
+  <div class="game-table-parent" style="overflow: hidden;">
     <table class="game-table">
       <tr>
         <td></td>
@@ -32,11 +39,14 @@
         <td class="number-cell-left">
           <div *ngFor="let numVal of currentGameData.rowNumbers[rowIndex]" class="number-inner-cell-display-left">{{ numVal }}</div>
         </td>
-        <td *ngFor="let col of row"
+        <td *ngFor="let col of row; let colIndex = index;"
             class="game-cell"
+            [style.border-color]="getCellBorderColor(colIndex, rowIndex)"
             [style.background-color]="getBackgroundColor(col, rowIndex)"
             (click)="gameCellClick(col)"
             (middleclick)="gameCellMiddleClick(col)"
+            (mouseenter)="gameCellMouseEnter(colIndex, rowIndex)"
+            (mouseleave)="gameCellMouseLeave()"
             (contextmenu)="gameCellRightClick(col)">
           <div class="inner-cell-display">
             <div style="height: 80%; width: 80%; margin: auto;">
@@ -47,5 +57,6 @@
         </td>
       </tr>
     </table>
+    Solved: {{ currentGameData.solved }}
   </div>
 </div>

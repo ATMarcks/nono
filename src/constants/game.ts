@@ -14,9 +14,14 @@ export interface GameData {
   }[][];
   colNumbers: number[][];
   rowNumbers: number[][];
-  cursor: {
+  hoverCursor: {
+    x: number; // Will be null if not on square
+    y: number; // Will be null if not on square
+  };
+  keyboardCursor: {
     x: number;
     y: number;
     hidden: boolean;
   };
+  solved: boolean;
 }

@@ -58,11 +58,16 @@ export class GameService {
       squareProperties: [[]],
       colNumbers: [[]],
       rowNumbers: [[]],
-      cursor: {
+      hoverCursor: {
+        x: null,
+        y: null,
+      },
+      keyboardCursor: {
         x: 0,
         y: 0,
         hidden: true
-      }
+      },
+      solved: false
     };
   }
 
