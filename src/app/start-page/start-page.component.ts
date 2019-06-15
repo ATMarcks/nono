@@ -1,15 +1,14 @@
 import {Component, HostListener, OnDestroy} from '@angular/core';
 import {Subscription} from 'rxjs';
+import * as debounce from 'lodash.debounce';
 
-import {fadeAnimation} from '../../animations/animations';
 import {GameService} from '../../services/game.service';
 import {GameData, SquareOptions} from '../../constants/game';
 
 @Component({
   selector: 'app-start-page',
   templateUrl: './start-page.component.html',
-  styleUrls: ['./start-page.component.scss'],
-  animations: [fadeAnimation]
+  styleUrls: ['./start-page.component.scss']
 })
 export class StartPageComponent implements OnDestroy {
   public newGameSub: Subscription;
@@ -19,13 +18,28 @@ export class StartPageComponent implements OnDestroy {
   public hideCursorTimerTimeout: ReturnType<typeof setTimeout>;
 
   public startPageOpen = true;
-  public rowCount: string;
-  public columnCount: string;
+
+  public startPage = {
+    rowCountInput: null as string,
+    columnCountInput: null as string,
+    startInputsErrorMessage: null as string,
+  };
 
   constructor(private gameService: GameService) {
     this.newGameSub = this.gameService.newGame$.subscribe((newGameData) => {
       this.currentGameData = newGameData;
     });
+  }
+
+  gameCellMouseLeave = debounce(() => {
+    this.currentGameData.hoverCursor.x = null;
+    this.currentGameData.hoverCursor.y = null;
+  }, 35);
+
+  gameCellMouseEnter(colIndex, rowIndex) {
+    this.gameCellMouseLeave.cancel();
+    this.currentGameData.hoverCursor.y = rowIndex;
+    this.currentGameData.hoverCursor.x = colIndex;
   }
 
   ngOnDestroy(): void {
@@ -58,7 +72,7 @@ export class StartPageComponent implements OnDestroy {
         } else if (event.code === 'KeyD') {
           this.gameCellMiddleClick(this.getSquareProps(keyboardCursorX, keyboardCursorY));
         }
-      } else {
+      } else if (this.keyPressAnyKeyboardControl(event.code)) {
         this.showKeyboardCursor();
       }
 
@@ -72,6 +86,10 @@ export class StartPageComponent implements OnDestroy {
         this.moveKeyboardCursor('up');
       }
     }
+  }
+
+  keyPressAnyKeyboardControl(eventCode) {
+    return ['ArrowRight', 'ArrowLeft', 'ArrowDown', 'ArrowUp', 'KeyA', 'KeyS', 'KeyD'].includes(eventCode);
   }
 
   moveKeyboardCursor(direction: string) {
@@ -159,16 +177,6 @@ export class StartPageComponent implements OnDestroy {
     }
   }
 
-  gameCellMouseEnter(colIndex, rowIndex) {
-    this.currentGameData.hoverCursor.y = rowIndex;
-    this.currentGameData.hoverCursor.x = colIndex;
-  }
-
-  gameCellMouseLeave() {
-    this.currentGameData.hoverCursor.x = null;
-    this.currentGameData.hoverCursor.y = null;
-  }
-
   getBackgroundColor(squareProps, rowIndex) {
     if (squareProps.currentSelectionType === SquareOptions.Selected) {
       return '#0079B8';
@@ -181,11 +189,9 @@ export class StartPageComponent implements OnDestroy {
   }
 
   checkIfSolved() {
-    for (let i = 0; i < this.currentGameData.squareProperties.length; i++) {
-      for (let j = 0; j < this.currentGameData.squareProperties[i].length; i++) {
-        const squareProps = this.currentGameData[i][j];
-
-        if (!(squareProps.currentSelectionType === SquareOptions.Selected && squareProps.squareSolution === true)) {
+    for (const squarePropsRow of this.currentGameData.squareProperties) {
+      for (const squareProps of squarePropsRow) {
+        if (squareProps.currentSelectionType === SquareOptions.Selected && squareProps.squareSolution !== true) {
           return false;
         }
       }
@@ -195,11 +201,12 @@ export class StartPageComponent implements OnDestroy {
   }
 
   getCellBorderColor(colIndex: number, rowIndex: number): string {
+    // Hover color takes precedence over keyboard color
     if (
       this.currentGameData.hoverCursor.x === colIndex &&
       this.currentGameData.hoverCursor.y === rowIndex
     ) {
-      return '#FF9A69';
+      return '#cd3517';
     }
 
     if (
@@ -207,26 +214,96 @@ export class StartPageComponent implements OnDestroy {
       this.currentGameData.keyboardCursor.y === rowIndex &&
       !this.currentGameData.keyboardCursor.hidden
     ) {
-      return '#FFCCB5';
+      return '#aa4500';
     }
 
     return '#000000';
   }
 
+  getTopNumberCellBackgroundImage(colIndex: number): string {
+    if (this.currentGameData.hoverCursor.x === colIndex) {
+      return 'linear-gradient(to bottom, rgba(205,53,23,0), rgba(205,53,23,1))';
+    } else if (!this.currentGameData.keyboardCursor.hidden && this.currentGameData.keyboardCursor.x === colIndex) {
+      return 'linear-gradient(to bottom, rgba(170,69,0,0), rgba(170,69,0,1))';
+    } else {
+      return 'linear-gradient(to bottom, rgba(37,51,61,0), rgba(37,51,61,1))';
+    }
+  }
+
+  getLeftNumberCellBackgroundImage(rowIndex: number): string {
+    if (this.currentGameData.hoverCursor.y === rowIndex) {
+      return 'linear-gradient(to right, rgba(205,53,23,0), rgba(205,53,23,1))';
+    } else if (!this.currentGameData.keyboardCursor.hidden && this.currentGameData.keyboardCursor.y === rowIndex) {
+      return 'linear-gradient(to right, rgba(170,69,0,0), rgba(170,69,0,1))';
+    } else {
+      return 'linear-gradient(to right, rgba(37,51,61,0), rgba(37,51,61,1))';
+    }
+  }
+
+  getGameCellImageSrc(squareProps): string {
+    if (squareProps.currentSelectionType === SquareOptions.Marked) {
+      return 'assets/baseline-help_outline-24px.svg';
+    } else if (squareProps.currentSelectionType === SquareOptions.Crossed) {
+      return 'assets/baseline-clear-24px.svg';
+    } else if (squareProps.currentSelectionType === SquareOptions.Error) {
+      return 'assets/baseline-highlight_off-24px.svg';
+    }
+  }
+
   assistToggle(): void {
-    // TODO: If we are toggling it on, do a check on all cells
-    if (!this.currentGameData.assist) {
-      console.log('! assist toggle');
+    // If we are toggling it on, do a check on all cells
+    // Otherwise remove all error tagged squares
+
+    for (const squarePropsRow of this.currentGameData.squareProperties) {
+      for (const squareProps of squarePropsRow) {
+        if (!this.currentGameData.assist) {
+          if ((squareProps.currentSelectionType === SquareOptions.Selected && squareProps.squareSolution !== true) ||
+            (squareProps.currentSelectionType === SquareOptions.Crossed && squareProps.squareSolution !== false)) {
+            squareProps.currentSelectionType = SquareOptions.Error;
+          }
+        } else {
+          if (squareProps.currentSelectionType === SquareOptions.Error) {
+            squareProps.currentSelectionType = null;
+          }
+        }
+      }
     }
 
     this.currentGameData.assist = !this.currentGameData.assist;
   }
 
   startClick(): void {
+    const colCountInt = parseInt(this.startPage.columnCountInput, 10);
+    const rowCountInt = parseInt(this.startPage.rowCountInput, 10);
+
+    const checkValid = (countInput: number, minValue: number, maxValue: number, typeStr: string): boolean => {
+      const generalError = ` input must be a whole number greater than or equal to ${minValue} and less than or equal to ${maxValue}`;
+      const lessThanError = ` input must be greater than or equal to ${minValue}`;
+      const greaterThanError = ` input must be less than or equal to ${maxValue}`;
+
+      if (!Number.isInteger(colCountInt)) {
+        this.startPage.startInputsErrorMessage = `${typeStr} ${generalError}`;
+      } else if (colCountInt < minValue) {
+        this.startPage.startInputsErrorMessage = `${typeStr} ${lessThanError}`;
+      } else if (colCountInt > maxValue) {
+        this.startPage.startInputsErrorMessage = `${typeStr} ${greaterThanError}`;
+      } else {
+        this.startPage.startInputsErrorMessage = null;
+      }
+
+      return this.startPage.startInputsErrorMessage === null;
+    };
+
+    if (!checkValid(rowCountInt, 1, 20, 'Row')) {
+      return;
+    } else if (!checkValid(colCountInt, 1, 20, 'Column')) {
+      return;
+    }
+
     this.startPageOpen = false;
     this.gameService.newGame(
-      parseInt(this.columnCount, 10),
-      parseInt(this.rowCount, 10)
+      parseInt(this.startPage.columnCountInput, 10),
+      parseInt(this.startPage.rowCountInput, 10)
     );
   }
 }

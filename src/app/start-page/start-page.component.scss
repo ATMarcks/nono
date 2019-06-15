@@ -3,6 +3,14 @@
   to   { opacity: 1}
 }
 
+.start-page-error-input {
+  color: white;
+  background-color: black;
+  margin-top: 0.5em;
+  border: calc(1px + 0.16vh + 0.2vw) solid black;
+  border-radius: calc(.4vh + .2vw);
+}
+
 .start-display {
   display: flex;
   height: 300px;
@@ -26,7 +34,7 @@
 .start-button {
   background-color: Transparent;
   background-repeat:no-repeat;
-  border-radius: 25px;
+  border-radius: calc(.4vh + .2vw);
   border: 3px solid white;
   padding: 15px;
   cursor:pointer;
@@ -55,7 +63,6 @@
   display: flex;
   justify-content: center;
   flex: 1;
-  overflow-y: auto;
   align-items: center;
   flex-direction: column;
 }
@@ -74,6 +81,12 @@
   height: calc(1px + 1.8vh + 0.7vw);
   width: calc(1px + 1.8vh + 0.7vw);;
   border: calc(1px + 0.10vh + 0.06vw) solid;
+}
+
+.solved-display {
+  color: white;
+  font-size: calc(10px + 2vw);
+  text-align: center;
 }
 
 .inner-cell-display {
@@ -117,10 +130,14 @@
   vertical-align: bottom;
   text-align: center;
   padding-top: calc(.2vw + .2vh);
+  border-radius: calc(.4vh + .2vw);
+  border: calc(1px + 0.10vh + 0.06vw) solid black;
 }
 
 .number-cell-left {
   padding-left: calc(.5vw + .5vh);
+  border-radius: calc(.4vh + .2vw);
+  border: calc(1px + 0.10vh + 0.06vw) solid black;
 }
 
 .cell-icon {

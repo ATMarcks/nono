@@ -29,8 +29,8 @@ export class GameService {
           currentSelectionType: null,
         });
       }
+
       newGame.rowNumbers.push(this.generateDisplayNumbers(...row.map(r => r.squareSolution).reverse()));
-      console.log(newGame.rowNumbers);
       newGameSquareProperties.push(row);
     }
 

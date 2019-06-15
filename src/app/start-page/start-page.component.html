@@ -5,13 +5,16 @@
   </div>
   <div class="start-display-options">
     <div class="input-item-margin">
-      Number of rows: <input class="start-input" size="1" min="0" max="15" type="number" name="rows" [(ngModel)]="rowCount">
+      Number of rows: <input class="start-input" size="1" min="1" max="20" type="number" name="rows" [(ngModel)]="startPage.rowCountInput">
     </div>
     <div class="input-item-margin">
-      Number of columns: <input class="start-input" size="1" min="0" max="15" type="number" name="columns" [(ngModel)]="columnCount">
+      Number of columns: <input class="start-input" size="1" min="1" max="20" type="number" name="columns" [(ngModel)]="startPage.columnCountInput">
     </div>
     <div>
       <button type="button" class="start-button" (click)="startClick()">Start</button>
+    </div>
+    <div *ngIf="startPage.startInputsErrorMessage" class="start-page-error-input">
+      {{ startPage.startInputsErrorMessage }}
     </div>
     <div style="font-size: 16px !important;">
       <br/>
@@ -22,12 +25,12 @@
     </div>
   </div>
 </div>
-<div *ngIf="!startPageOpen" style="height: 100%;" (keydown)="gameKeyPress($event)">
-  <div class="game-table-parent" style="overflow: hidden;">
+<div *ngIf="!startPageOpen" (keydown)="gameKeyPress($event)">
+  <div class="game-table-parent">
     <table class="game-table">
       <tr>
         <td></td>
-        <td *ngFor="let colNumCollection of currentGameData.colNumbers" class="number-cell-top">
+        <td *ngFor="let colNumCollection of currentGameData.colNumbers; let colIndex = index;" class="number-cell-top" [ngStyle]="{ 'background-image': getTopNumberCellBackgroundImage(colIndex) }">
           <div class="bottom-align">
             <div *ngFor="let numVal of colNumCollection" class="number-inner-cell-display-top">
               <div>{{ numVal }}</div>
@@ -36,7 +39,7 @@
         </td>
       </tr>
       <tr *ngFor="let row of currentGameData.squareProperties; let rowIndex = index;">
-        <td class="number-cell-left">
+        <td class="number-cell-left" [ngStyle]="{ 'background-image': getLeftNumberCellBackgroundImage(rowIndex) }">
           <div *ngFor="let numVal of currentGameData.rowNumbers[rowIndex]" class="number-inner-cell-display-left">{{ numVal }}</div>
         </td>
         <td *ngFor="let col of row; let colIndex = index;"
@@ -50,17 +53,18 @@
             (contextmenu)="gameCellRightClick(col)">
           <div class="inner-cell-display">
             <div style="height: 80%; width: 80%; margin: auto;">
-              <img *ngIf="col.currentSelectionType === squareOptionsEnum.Marked" class="cell-icon" src="assets/baseline-help_outline-24px.svg">
-              <img *ngIf="col.currentSelectionType === squareOptionsEnum.Crossed" class="cell-icon" src="assets/baseline-clear-24px.svg">
-              <img *ngIf="col.currentSelectionType === squareOptionsEnum.Error" class="cell-icon" src="assets/baseline-highlight_off-24px.svg">
+              <img *ngIf="![null, squareOptionsEnum.Selected].includes(col.currentSelectionType)" class="cell-icon" [src]="getGameCellImageSrc(col)">
             </div>
           </div>
         </td>
       </tr>
     </table>
-    <div style="width: 100%;">
-      <div style="float: left;">Solved: {{ currentGameData.solved }}</div>
+    <div>
       <div class="assist-text" (click)="assistToggle()">Assist: {{ currentGameData.assist ? 'On': 'Off' }}</div>
+    </div>
+    <div *ngIf="currentGameData.solved" class="solved-display">
+      <br>
+      The puzzle has been solved&nbsp;<button class="start-button" (click)="startPageOpen = true">Return to start page</button>
     </div>
   </div>
 </div>
