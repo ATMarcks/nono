@@ -25,7 +25,7 @@
     </div>
   </div>
 </div>
-<div *ngIf="!startPageOpen" (keydown)="gameKeyPress($event)">
+<div *ngIf="!startPageOpen">
   <div class="game-table-parent">
     <table class="game-table" #gameTable>
       <tr>
@@ -60,7 +60,7 @@
       </tr>
     </table>
     <div [style.width.px]="gameTableWidth">
-      <div class="settings-icon">
+      <div class="settings-icon" (click)="settings.exportPuzzle()">
         <img class="settings-icon-svg" src="assets/baseline-settings-20px.svg">
       </div>
       <div class="assist-text" (click)="assistToggle()">Assist: {{ currentGameData.assist ? 'On': 'Off' }}</div>

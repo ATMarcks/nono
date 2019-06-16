@@ -1,9 +1,10 @@
-import {ElementRef, Component, HostListener, OnDestroy, ViewChild, AfterViewInit} from '@angular/core';
-import {Subscription} from 'rxjs';
+import { ElementRef, Component, HostListener, OnDestroy, ViewChild, AfterViewInit } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { debounce, get } from 'lodash';
+import * as downloadjs from 'downloadjs';
 
-import {GameService} from '../../services/game.service';
-import {GameData, SquareOptions} from '../../constants/game';
+import { GameService } from '../../services/game.service';
+import { GameData, SquareOptions } from '../../constants/game';
 
 @Component({
   selector: 'app-start-page',
@@ -27,6 +28,16 @@ export class StartPageComponent implements OnDestroy, AfterViewInit {
     rowCountInput: null as string,
     columnCountInput: null as string,
     startInputsErrorMessage: null as string,
+  };
+
+  public settings = {
+    exportPuzzle: () => {
+      downloadjs(
+        JSON.stringify(this.currentGameData.squareProperties.map(x => x.map(y => y.squareSolution ? 1 : 0))),
+        'puzzle dl!',
+        'application/json'
+      );
+    }
   };
 
   constructor(private gameService: GameService) {
@@ -110,15 +121,32 @@ export class StartPageComponent implements OnDestroy, AfterViewInit {
     return ['ArrowRight', 'ArrowLeft', 'ArrowDown', 'ArrowUp', 'KeyA', 'KeyS', 'KeyD'].includes(eventCode);
   }
 
-  moveKeyboardCursor(direction: string) {
-    if (direction === 'right' && this.currentGameData.cols - 1 !== this.currentGameData.keyboardCursor.x) {
-      this.currentGameData.keyboardCursor.x++;
-    } else if (direction === 'left' && this.currentGameData.keyboardCursor.x !== 0) {
-      this.currentGameData.keyboardCursor.x--;
-    } else if (direction === 'down' && this.currentGameData.rows - 1 !== this.currentGameData.keyboardCursor.y) {
-      this.currentGameData.keyboardCursor.y++;
-    } else if (direction === 'up' && this.currentGameData.keyboardCursor.y !== 0) {
-      this.currentGameData.keyboardCursor.y--;
+  moveKeyboardCursor(direction: string): void {
+    // Move keyboard cursor, rollover
+    if (direction === 'right') {
+      if (this.currentGameData.cols - 1 === this.currentGameData.keyboardCursor.x) {
+        this.currentGameData.keyboardCursor.x = 0;
+      } else {
+        this.currentGameData.keyboardCursor.x++;
+      }
+    } else if (direction === 'left') {
+      if (this.currentGameData.keyboardCursor.x === 0) {
+        this.currentGameData.keyboardCursor.x = this.currentGameData.cols - 1;
+      } else {
+        this.currentGameData.keyboardCursor.x--;
+      }
+    } else if (direction === 'down') {
+      if (this.currentGameData.rows - 1 === this.currentGameData.keyboardCursor.y) {
+        this.currentGameData.keyboardCursor.y = 0;
+      } else {
+        this.currentGameData.keyboardCursor.y++;
+      }
+    } else if (direction === 'up') {
+      if (this.currentGameData.keyboardCursor.y === 0) {
+        this.currentGameData.keyboardCursor.y = this.currentGameData.rows - 1;
+      } else {
+        this.currentGameData.keyboardCursor.y--;
+      }
     }
 
     this.showKeyboardCursor();
@@ -204,18 +232,6 @@ export class StartPageComponent implements OnDestroy, AfterViewInit {
       }
       return '#919FA8';
     }
-  }
-
-  checkIfSolved() {
-    for (const squarePropsRow of this.currentGameData.squareProperties) {
-      for (const squareProps of squarePropsRow) {
-        if (squareProps.currentSelectionType === SquareOptions.Selected && squareProps.squareSolution !== true) {
-          return false;
-        }
-      }
-    }
-
-    return true;
   }
 
   getCellBorderColor(colIndex: number, rowIndex: number): string {
