@@ -1,6 +1,6 @@
-import {Component, HostListener, OnDestroy} from '@angular/core';
+import {ElementRef, Component, HostListener, OnDestroy, ViewChild, AfterViewInit} from '@angular/core';
 import {Subscription} from 'rxjs';
-import * as debounce from 'lodash.debounce';
+import { debounce, get } from 'lodash';
 
 import {GameService} from '../../services/game.service';
 import {GameData, SquareOptions} from '../../constants/game';
@@ -10,13 +10,17 @@ import {GameData, SquareOptions} from '../../constants/game';
   templateUrl: './start-page.component.html',
   styleUrls: ['./start-page.component.scss']
 })
-export class StartPageComponent implements OnDestroy {
+export class StartPageComponent implements OnDestroy, AfterViewInit {
+  @ViewChild('gameTable', { static: false }) gameTableRef: ElementRef;
+
   public newGameSub: Subscription;
   public currentGameData: GameData;
   public squareOptionsEnum = SquareOptions;
 
   public hideCursorTimerTimeout: ReturnType<typeof setTimeout>;
+  public gameTablePoll: ReturnType<typeof setInterval>;
 
+  public gameTableWidth = 100;
   public startPageOpen = true;
 
   public startPage = {
@@ -36,6 +40,16 @@ export class StartPageComponent implements OnDestroy {
     this.currentGameData.hoverCursor.y = null;
   }, 35);
 
+  ngAfterViewInit() {
+    this.gameTableWidth = get(this.gameTableRef, 'nativeElement.clientWidth', 300);
+
+    this.gameTablePoll = setInterval(() => {
+      if (this.gameTableRef) {
+       this.gameTableWidth = get(this.gameTableRef, 'nativeElement.clientWidth', 300);
+      }
+    }, 400);
+  }
+
   gameCellMouseEnter(colIndex, rowIndex) {
     this.gameCellMouseLeave.cancel();
     this.currentGameData.hoverCursor.y = rowIndex;
@@ -44,6 +58,10 @@ export class StartPageComponent implements OnDestroy {
 
   ngOnDestroy(): void {
     this.newGameSub.unsubscribe();
+
+    // Just making sure this stops polling
+    clearInterval(this.gameTablePoll);
+    this.gameTablePoll = null;
   }
 
   @HostListener('document:keydown', ['$event'])

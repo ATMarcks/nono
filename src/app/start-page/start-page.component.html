@@ -27,7 +27,7 @@
 </div>
 <div *ngIf="!startPageOpen" (keydown)="gameKeyPress($event)">
   <div class="game-table-parent">
-    <table class="game-table">
+    <table class="game-table" #gameTable>
       <tr>
         <td></td>
         <td *ngFor="let colNumCollection of currentGameData.colNumbers; let colIndex = index;" class="number-cell-top" [ngStyle]="{ 'background-image': getTopNumberCellBackgroundImage(colIndex) }">
@@ -59,7 +59,10 @@
         </td>
       </tr>
     </table>
-    <div>
+    <div [style.width.px]="gameTableWidth">
+      <div class="settings-icon">
+        <img class="settings-icon-svg" src="assets/baseline-settings-20px.svg">
+      </div>
       <div class="assist-text" (click)="assistToggle()">Assist: {{ currentGameData.assist ? 'On': 'Off' }}</div>
     </div>
     <div *ngIf="currentGameData.solved" class="solved-display">

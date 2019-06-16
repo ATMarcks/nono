@@ -110,9 +110,25 @@
   display:inline-block;
 }
 
+.settings-icon {
+  float: left;
+  margin-top: .5em;
+}
+
+.settings-icon:hover {
+  cursor: pointer;
+}
+
+.settings-icon-svg {
+  height: 16px;
+  width: 16px;
+}
+
 .assist-text {
   float: right;
   color: white;
+  font-size: 16px;
+  margin-top: .5em;
 }
 
 .assist-text:hover {

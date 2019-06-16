@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
+
 import { GameData } from '../constants/game';
 
 @Injectable({
@@ -15,17 +16,30 @@ export class GameService {
 
   }
 
-  newGame(cols: number, rows: number) {
+  newGame(cols: number, rows: number): void {
     const newGame: GameData = this.createNewGame(cols, rows);
 
     const newGameSquareProperties = [];
+
+    // There must be at least one square filled in
+    let anySquareASolution = false;
 
     newGame.rowNumbers = [];
     for (let i = 0; i < rows; i++) {
       const row = [];
       for (let j = 0; j < cols; j++) {
+        let squareSolution = Math.random() < .5;
+
+        if (squareSolution) {
+          anySquareASolution = true;
+        }
+
+        if (!anySquareASolution && i === rows - 1 && j === cols - 1) {
+          squareSolution = true;
+        }
+
         row.push({
-          squareSolution: Math.random() < .5,
+          squareSolution,
           currentSelectionType: null,
         });
       }
