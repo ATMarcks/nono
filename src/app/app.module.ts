@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { AppComponent } from './app.component';
 import { StartPageComponent } from './start-page/start-page.component';
 
-import { GameService } from '../services/game.service';
+import { NewGameService } from '../services/new-game.service';
 
 import { MiddleclickDirective } from '../directives/middle-mouse-click.directive';
 
@@ -19,7 +19,7 @@ import { MiddleclickDirective } from '../directives/middle-mouse-click.directive
     BrowserModule,
     FormsModule
   ],
-  providers: [GameService],
+  providers: [NewGameService],
   bootstrap: [AppComponent]
 })
 export class AppModule {

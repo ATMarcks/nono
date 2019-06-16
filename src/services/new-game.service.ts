@@ -6,7 +6,7 @@ import { GameData } from '../constants/game';
 @Injectable({
   providedIn: 'root',
 })
-export class GameService {
+export class NewGameService {
   public gameData: GameData = this.createNewGame(0, 0);
 
   private newGameSub = new Subject<GameData>();

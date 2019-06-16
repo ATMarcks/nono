@@ -3,7 +3,7 @@ import { Subscription } from 'rxjs';
 import { debounce, get } from 'lodash';
 import * as downloadjs from 'downloadjs';
 
-import { GameService } from '../../services/game.service';
+import { NewGameService } from '../../services/new-game.service';
 import { GameData, SquareOptions } from '../../constants/game';
 
 @Component({
@@ -40,8 +40,8 @@ export class StartPageComponent implements OnDestroy, AfterViewInit {
     }
   };
 
-  constructor(private gameService: GameService) {
-    this.newGameSub = this.gameService.newGame$.subscribe((newGameData) => {
+  constructor(private newGameService: NewGameService) {
+    this.newGameSub = this.newGameService.newGame$.subscribe((newGameData) => {
       this.currentGameData = newGameData;
     });
   }
@@ -335,7 +335,7 @@ export class StartPageComponent implements OnDestroy, AfterViewInit {
     }
 
     this.startPageOpen = false;
-    this.gameService.newGame(
+    this.newGameService.newGame(
       parseInt(this.startPage.columnCountInput, 10),
       parseInt(this.startPage.rowCountInput, 10)
     );
