@@ -60,9 +60,7 @@
       </tr>
     </table>
     <div [style.width.px]="gameTableWidth">
-      <div class="settings-icon" (click)="settings.exportPuzzle()">
-        <img class="settings-icon-svg" src="assets/baseline-settings-20px.svg">
-      </div>
+      <app-settings class="settings-component"></app-settings>
       <div class="assist-text" (click)="assistToggle()">Assist: {{ currentGameData.assist ? 'On': 'Off' }}</div>
     </div>
     <div *ngIf="currentGameData.solved" class="solved-display">

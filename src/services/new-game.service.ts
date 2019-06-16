@@ -12,9 +12,7 @@ export class NewGameService {
   private newGameSub = new Subject<GameData>();
   public newGame$ = this.newGameSub.asObservable();
 
-  constructor() {
-
-  }
+  constructor() { }
 
   newGame(cols: number, rows: number): void {
     const newGame: GameData = this.createNewGame(cols, rows);

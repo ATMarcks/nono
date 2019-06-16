@@ -8,12 +8,14 @@ import { StartPageComponent } from './start-page/start-page.component';
 import { NewGameService } from '../services/new-game.service';
 
 import { MiddleclickDirective } from '../directives/middle-mouse-click.directive';
+import { SettingsComponent } from './settings/settings.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     StartPageComponent,
-    MiddleclickDirective
+    MiddleclickDirective,
+    SettingsComponent
   ],
   imports: [
     BrowserModule,

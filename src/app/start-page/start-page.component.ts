@@ -4,6 +4,7 @@ import { debounce, get } from 'lodash';
 import * as downloadjs from 'downloadjs';
 
 import { NewGameService } from '../../services/new-game.service';
+import { SettingsService } from '../../services/settings.service';
 import { GameData, SquareOptions } from '../../constants/game';
 
 @Component({
@@ -30,25 +31,17 @@ export class StartPageComponent implements OnDestroy, AfterViewInit {
     startInputsErrorMessage: null as string,
   };
 
-  public settings = {
-    exportPuzzle: () => {
-      downloadjs(
-        JSON.stringify(this.currentGameData.squareProperties.map(x => x.map(y => y.squareSolution ? 1 : 0))),
-        'puzzle dl!',
-        'application/json'
-      );
-    }
-  };
-
-  constructor(private newGameService: NewGameService) {
+  constructor(private newGameService: NewGameService, private settingsService: SettingsService) {
     this.newGameSub = this.newGameService.newGame$.subscribe((newGameData) => {
       this.currentGameData = newGameData;
+      this.gameStateChange();
     });
   }
 
   gameCellMouseLeave = debounce(() => {
     this.currentGameData.hoverCursor.x = null;
     this.currentGameData.hoverCursor.y = null;
+    this.gameStateChange();
   }, 35);
 
   ngAfterViewInit() {
@@ -65,6 +58,7 @@ export class StartPageComponent implements OnDestroy, AfterViewInit {
     this.gameCellMouseLeave.cancel();
     this.currentGameData.hoverCursor.y = rowIndex;
     this.currentGameData.hoverCursor.x = colIndex;
+    this.gameStateChange();
   }
 
   ngOnDestroy(): void {
@@ -150,6 +144,7 @@ export class StartPageComponent implements OnDestroy, AfterViewInit {
     }
 
     this.showKeyboardCursor();
+    this.gameStateChange();
   }
 
   getSquareProps(colIndex: number, rowIndex: number) {
@@ -172,6 +167,7 @@ export class StartPageComponent implements OnDestroy, AfterViewInit {
         this.currentGameData.keyboardCursor.hidden = true;
 
       }, 20000);
+      this.gameStateChange();
     }
   }
 
@@ -199,6 +195,7 @@ export class StartPageComponent implements OnDestroy, AfterViewInit {
     }
 
     this.currentGameData.solved = true;
+    this.gameStateChange();
   }
 
   gameCellMiddleClick(squareProps): void {
@@ -209,6 +206,7 @@ export class StartPageComponent implements OnDestroy, AfterViewInit {
         squareProps.currentSelectionType = null;
       }
     }
+    this.gameStateChange();
   }
 
   gameCellRightClick(squareProps): void {
@@ -221,6 +219,7 @@ export class StartPageComponent implements OnDestroy, AfterViewInit {
         squareProps.currentSelectionType = SquareOptions.Crossed;
       }
     }
+    this.gameStateChange();
   }
 
   getBackgroundColor(squareProps, rowIndex) {
@@ -304,6 +303,7 @@ export class StartPageComponent implements OnDestroy, AfterViewInit {
     }
 
     this.currentGameData.assist = !this.currentGameData.assist;
+    this.gameStateChange();
   }
 
   startClick(): void {
@@ -339,5 +339,9 @@ export class StartPageComponent implements OnDestroy, AfterViewInit {
       parseInt(this.startPage.columnCountInput, 10),
       parseInt(this.startPage.rowCountInput, 10)
     );
+  }
+
+  gameStateChange(): void {
+    this.settingsService.currentGameStateSub.next(this.currentGameData);
   }
 }

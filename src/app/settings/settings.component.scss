@@ -1,0 +1,24 @@
+.dropdown-container {
+  display: flex;
+  justify-content:space-between;
+  flex-direction:column;
+  background-color: lightgrey;
+}
+
+.dropdown-item {
+  background-color: cornflowerblue;
+  width: 100px;
+  margin: 10px;
+}
+
+.settings-icon:hover {
+  cursor: pointer;
+}
+
+.settings-icon-svg {
+  height: 16px;
+  width: 16px;
+}
+
+
+
