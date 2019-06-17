@@ -1,21 +1,25 @@
-import { Injectable } from '@angular/core';
-import { Subject } from 'rxjs';
+import { Injectable, OnDestroy } from '@angular/core';
+import { Subscription } from 'rxjs';
 import * as downloadjs from 'downloadjs';
 
+import { GameService } from './game.service';
 import { GameData } from '../constants/game';
 
 @Injectable({
   providedIn: 'root',
 })
-export class SettingsService {
+export class SettingsService implements OnDestroy {
   private currentGameState: GameData;
-  public currentGameStateSub = new Subject<GameData>();
-  public currentGameState$ = this.currentGameStateSub.asObservable();
+  private gameSub: Subscription;
 
-  constructor() {
-    this.currentGameState$.subscribe((gameState) => {
+  constructor(private gameService: GameService) {
+    this.gameSub = this.gameService.game$.subscribe((gameState) => {
       this.currentGameState = gameState;
     });
+  }
+
+  ngOnDestroy() {
+    this.gameSub.unsubscribe();
   }
 
   exportPuzzle(): void {

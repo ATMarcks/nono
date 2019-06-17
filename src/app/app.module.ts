@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { AppComponent } from './app.component';
 import { StartPageComponent } from './start-page/start-page.component';
 
-import { NewGameService } from '../services/new-game.service';
+import { GameService } from '../services/game.service';
 
 import { MiddleclickDirective } from '../directives/middle-mouse-click.directive';
 import { SettingsComponent } from './settings/settings.component';
@@ -21,7 +21,7 @@ import { SettingsComponent } from './settings/settings.component';
     BrowserModule,
     FormsModule
   ],
-  providers: [NewGameService],
+  providers: [GameService],
   bootstrap: [AppComponent]
 })
 export class AppModule {

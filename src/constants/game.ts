@@ -5,6 +5,12 @@ export enum SquareOptions {
   Error // Selection made in error
 }
 
+export enum KeyboardMove {
+  Up = 'ArrowUp',
+  Down = 'ArrowDown',
+  Right = 'ArrowRight',
+  Left = 'ArrowLeft'
+}
 
 export interface GameData {
   rows: number;
@@ -23,6 +29,7 @@ export interface GameData {
     x: number;
     y: number;
     hidden: boolean;
+    hideCursorTimerTimeout: ReturnType<typeof setTimeout>;
   };
   solved: boolean;
   assist: boolean;

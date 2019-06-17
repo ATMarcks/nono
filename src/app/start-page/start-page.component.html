@@ -46,11 +46,11 @@
             class="game-cell"
             [style.border-color]="getCellBorderColor(colIndex, rowIndex)"
             [style.background-color]="getBackgroundColor(col, rowIndex)"
-            (click)="gameCellClick(col)"
-            (middleclick)="gameCellMiddleClick(col)"
-            (mouseenter)="gameCellMouseEnter(colIndex, rowIndex)"
-            (mouseleave)="gameCellMouseLeave()"
-            (contextmenu)="gameCellRightClick(col)">
+            (click)="gameService.gameCellClick(col)"
+            (middleclick)="gameService.gameCellMiddleClick(col)"
+            (mouseenter)="gameService.gameCellMouseEnter(colIndex, rowIndex)"
+            (mouseleave)="gameService.gameCellMouseLeave()"
+            (contextmenu)="gameService.gameCellRightClick(col)">
           <div class="inner-cell-display">
             <div style="height: 80%; width: 80%; margin: auto;">
               <img *ngIf="![null, squareOptionsEnum.Selected].includes(col.currentSelectionType)" class="cell-icon" [src]="getGameCellImageSrc(col)">
@@ -60,8 +60,7 @@
       </tr>
     </table>
     <div [style.width.px]="gameTableWidth">
-      <app-settings class="settings-component"></app-settings>
-      <div class="assist-text" (click)="assistToggle()">Assist: {{ currentGameData.assist ? 'On': 'Off' }}</div>
+      <app-settings [style.width.px]="gameTableWidth" class="settings-component"></app-settings>
     </div>
     <div *ngIf="currentGameData.solved" class="solved-display">
       <br>

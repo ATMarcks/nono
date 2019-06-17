@@ -1,10 +1,8 @@
 import { ElementRef, Component, HostListener, OnDestroy, ViewChild, AfterViewInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { debounce, get } from 'lodash';
-import * as downloadjs from 'downloadjs';
 
-import { NewGameService } from '../../services/new-game.service';
-import { SettingsService } from '../../services/settings.service';
+import { GameService } from '../../services/game.service';
 import { GameData, SquareOptions } from '../../constants/game';
 
 @Component({
@@ -15,11 +13,10 @@ import { GameData, SquareOptions } from '../../constants/game';
 export class StartPageComponent implements OnDestroy, AfterViewInit {
   @ViewChild('gameTable', { static: false }) gameTableRef: ElementRef;
 
-  public newGameSub: Subscription;
+  public gameSub: Subscription;
   public currentGameData: GameData;
   public squareOptionsEnum = SquareOptions;
 
-  public hideCursorTimerTimeout: ReturnType<typeof setTimeout>;
   public gameTablePoll: ReturnType<typeof setInterval>;
 
   public gameTableWidth = 100;
@@ -31,18 +28,11 @@ export class StartPageComponent implements OnDestroy, AfterViewInit {
     startInputsErrorMessage: null as string,
   };
 
-  constructor(private newGameService: NewGameService, private settingsService: SettingsService) {
-    this.newGameSub = this.newGameService.newGame$.subscribe((newGameData) => {
-      this.currentGameData = newGameData;
-      this.gameStateChange();
+  constructor(private gameService: GameService) {
+    this.gameSub = this.gameService.game$.subscribe((gameData) => {
+      this.currentGameData = gameData;
     });
   }
-
-  gameCellMouseLeave = debounce(() => {
-    this.currentGameData.hoverCursor.x = null;
-    this.currentGameData.hoverCursor.y = null;
-    this.gameStateChange();
-  }, 35);
 
   ngAfterViewInit() {
     this.gameTableWidth = get(this.gameTableRef, 'nativeElement.clientWidth', 300);
@@ -54,172 +44,17 @@ export class StartPageComponent implements OnDestroy, AfterViewInit {
     }, 400);
   }
 
-  gameCellMouseEnter(colIndex, rowIndex) {
-    this.gameCellMouseLeave.cancel();
-    this.currentGameData.hoverCursor.y = rowIndex;
-    this.currentGameData.hoverCursor.x = colIndex;
-    this.gameStateChange();
-  }
-
   ngOnDestroy(): void {
-    this.newGameSub.unsubscribe();
+    this.gameSub.unsubscribe();
 
-    // Just making sure this stops polling
+    // Making sure this stops polling
     clearInterval(this.gameTablePoll);
     this.gameTablePoll = null;
   }
 
   @HostListener('document:keydown', ['$event'])
   keyPress(event: KeyboardEvent) {
-    if (this.currentGameData) {
-      const hoverCursorX = this.currentGameData.hoverCursor.x;
-      const hoverCursorY = this.currentGameData.hoverCursor.y;
-      const keyboardCursorX = this.currentGameData.keyboardCursor.x;
-      const keyboardCursorY = this.currentGameData.keyboardCursor.y;
-
-      if (hoverCursorX !== null && hoverCursorY !== null) {
-        if (event.code === 'KeyZ') {
-          this.gameCellClick(this.getSquareProps(hoverCursorX, hoverCursorY));
-        } else if (event.code === 'KeyX') {
-          this.gameCellRightClick(this.getSquareProps(hoverCursorX, hoverCursorY));
-        } else if (event.code === 'KeyC') {
-          this.gameCellMiddleClick(this.getSquareProps(hoverCursorX, hoverCursorY));
-        }
-      }
-
-      if (!this.currentGameData.keyboardCursor.hidden) {
-        if (event.code === 'KeyA') {
-          this.gameCellClick(this.getSquareProps(keyboardCursorX, keyboardCursorY));
-        } else if (event.code === 'KeyS') {
-          this.gameCellRightClick(this.getSquareProps(keyboardCursorX, keyboardCursorY));
-        } else if (event.code === 'KeyD') {
-          this.gameCellMiddleClick(this.getSquareProps(keyboardCursorX, keyboardCursorY));
-        }
-      } else if (this.keyPressAnyKeyboardControl(event.code)) {
-        this.showKeyboardCursor();
-      }
-
-      if (event.code === 'ArrowRight') {
-        this.moveKeyboardCursor('right');
-      } else if (event.code === 'ArrowDown') {
-        this.moveKeyboardCursor('down');
-      } else if (event.code === 'ArrowLeft') {
-        this.moveKeyboardCursor('left');
-      } else if (event.code === 'ArrowUp') {
-        this.moveKeyboardCursor('up');
-      }
-    }
-  }
-
-  keyPressAnyKeyboardControl(eventCode) {
-    return ['ArrowRight', 'ArrowLeft', 'ArrowDown', 'ArrowUp', 'KeyA', 'KeyS', 'KeyD'].includes(eventCode);
-  }
-
-  moveKeyboardCursor(direction: string): void {
-    // Move keyboard cursor, rollover
-    if (direction === 'right') {
-      if (this.currentGameData.cols - 1 === this.currentGameData.keyboardCursor.x) {
-        this.currentGameData.keyboardCursor.x = 0;
-      } else {
-        this.currentGameData.keyboardCursor.x++;
-      }
-    } else if (direction === 'left') {
-      if (this.currentGameData.keyboardCursor.x === 0) {
-        this.currentGameData.keyboardCursor.x = this.currentGameData.cols - 1;
-      } else {
-        this.currentGameData.keyboardCursor.x--;
-      }
-    } else if (direction === 'down') {
-      if (this.currentGameData.rows - 1 === this.currentGameData.keyboardCursor.y) {
-        this.currentGameData.keyboardCursor.y = 0;
-      } else {
-        this.currentGameData.keyboardCursor.y++;
-      }
-    } else if (direction === 'up') {
-      if (this.currentGameData.keyboardCursor.y === 0) {
-        this.currentGameData.keyboardCursor.y = this.currentGameData.rows - 1;
-      } else {
-        this.currentGameData.keyboardCursor.y--;
-      }
-    }
-
-    this.showKeyboardCursor();
-    this.gameStateChange();
-  }
-
-  getSquareProps(colIndex: number, rowIndex: number) {
-    try {
-      return this.currentGameData.squareProperties[rowIndex][colIndex];
-    } catch (e) {
-      console.error(e);
-      return null;
-    }
-  }
-
-  showKeyboardCursor() {
-    if (this.currentGameData.keyboardCursor.hidden) {
-      this.currentGameData.keyboardCursor.hidden = false;
-
-      clearTimeout(this.hideCursorTimerTimeout);
-      this.hideCursorTimerTimeout = null;
-
-      this.hideCursorTimerTimeout = setTimeout(() => {
-        this.currentGameData.keyboardCursor.hidden = true;
-
-      }, 20000);
-      this.gameStateChange();
-    }
-  }
-
-  gameCellClick(squareProps): void {
-    if ([SquareOptions.Selected, SquareOptions.Crossed].includes(squareProps.currentSelectionType)) {
-      squareProps.currentSelectionType = null;
-    } else if ([null, SquareOptions.Marked, SquareOptions.Error].includes(squareProps.currentSelectionType)) {
-      if (this.currentGameData.assist && !squareProps.squareSolution) {
-        squareProps.currentSelectionType = SquareOptions.Error;
-      } else {
-        squareProps.currentSelectionType = SquareOptions.Selected;
-      }
-    }
-
-    // check if solved
-    for (const row of this.currentGameData.squareProperties) {
-      for (const cell of row) {
-        if (
-          (!cell.squareSolution && cell.currentSelectionType === SquareOptions.Selected) ||
-          (cell.squareSolution && cell.currentSelectionType !== SquareOptions.Selected)) {
-          this.currentGameData.solved = false;
-          return;
-        }
-      }
-    }
-
-    this.currentGameData.solved = true;
-    this.gameStateChange();
-  }
-
-  gameCellMiddleClick(squareProps): void {
-    if (![SquareOptions.Selected, SquareOptions.Crossed].includes(squareProps.currentSelectionType)) {
-      if (squareProps.currentSelectionType === null) {
-        squareProps.currentSelectionType = SquareOptions.Marked;
-      } else {
-        squareProps.currentSelectionType = null;
-      }
-    }
-    this.gameStateChange();
-  }
-
-  gameCellRightClick(squareProps): void {
-    if ([SquareOptions.Selected, SquareOptions.Crossed].includes(squareProps.currentSelectionType)) {
-      squareProps.currentSelectionType = null;
-    } else if ([SquareOptions.Marked, null, SquareOptions.Error].includes(squareProps.currentSelectionType)) {
-      if (this.currentGameData.assist && squareProps.squareSolution) {
-        squareProps.currentSelectionType = SquareOptions.Error;
-      } else {
-        squareProps.currentSelectionType = SquareOptions.Crossed;
-      }
-    }
-    this.gameStateChange();
+    this.gameService.keyPress(event);
   }
 
   getBackgroundColor(squareProps, rowIndex) {
@@ -283,29 +118,6 @@ export class StartPageComponent implements OnDestroy, AfterViewInit {
     }
   }
 
-  assistToggle(): void {
-    // If we are toggling it on, do a check on all cells
-    // Otherwise remove all error tagged squares
-
-    for (const squarePropsRow of this.currentGameData.squareProperties) {
-      for (const squareProps of squarePropsRow) {
-        if (!this.currentGameData.assist) {
-          if ((squareProps.currentSelectionType === SquareOptions.Selected && squareProps.squareSolution !== true) ||
-            (squareProps.currentSelectionType === SquareOptions.Crossed && squareProps.squareSolution !== false)) {
-            squareProps.currentSelectionType = SquareOptions.Error;
-          }
-        } else {
-          if (squareProps.currentSelectionType === SquareOptions.Error) {
-            squareProps.currentSelectionType = null;
-          }
-        }
-      }
-    }
-
-    this.currentGameData.assist = !this.currentGameData.assist;
-    this.gameStateChange();
-  }
-
   startClick(): void {
     const colCountInt = parseInt(this.startPage.columnCountInput, 10);
     const rowCountInt = parseInt(this.startPage.rowCountInput, 10);
@@ -335,13 +147,9 @@ export class StartPageComponent implements OnDestroy, AfterViewInit {
     }
 
     this.startPageOpen = false;
-    this.newGameService.newGame(
+    this.gameService.newGame(
       parseInt(this.startPage.columnCountInput, 10),
       parseInt(this.startPage.rowCountInput, 10)
     );
-  }
-
-  gameStateChange(): void {
-    this.settingsService.currentGameStateSub.next(this.currentGameData);
   }
 }

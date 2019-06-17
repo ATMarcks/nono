@@ -1,6 +1,7 @@
 <div class="settings-icon">
   <img class="settings-icon-svg" src="assets/baseline-settings-20px.svg">
 </div>
+<div class="assist-text" (click)="gameService.assistToggle()">Assist: {{ assistOn ? 'On': 'Off' }}</div>
 <div (click)="settingsService.exportPuzzle()">
   Export Puzzle
 </div>
