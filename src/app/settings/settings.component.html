@@ -2,6 +2,37 @@
   <img class="settings-icon-svg" src="assets/baseline-settings-20px.svg">
 </div>
 <div class="assist-text" (click)="gameService.assistToggle()">Assist: {{ assistOn ? 'On': 'Off' }}</div>
-<div (click)="settingsService.exportPuzzle()">
+<div (click)="prompts.newGamePrompt.open = true">
+  New Game
+</div>
+<div (click)="prompts.importPrompt.open = true">
+  Import Puzzle
+</div>
+<div (click)="prompts.exportPrompt.open = true">
   Export Puzzle
+</div>
+
+<div *ngIf="anyPromptOpen()" class="darken-bg"></div>
+<div *ngIf="anyPromptOpen()" class="modal">
+  <div *ngIf="prompts.newGamePrompt.open">
+    <label for="cols">Cols:</label>
+    <input type="text" id="cols" [(ngModel)]="prompts.newGamePrompt.cols">
+    <label for="rows">Rows:</label>
+    <input type="text" id="rows" [(ngModel)]="prompts.newGamePrompt.rows">
+    <button (click)="newGame()">New Game</button>
+    <button (click)="newGameCancel()">Close</button>
+  </div>
+  <div *ngIf="prompts.exportPrompt.open">
+    <label for="export-input">Filename:</label>
+    <input type="text" id="export-input" [(ngModel)]="prompts.exportPrompt.filename">
+    <button (click)="exportPuzzle()">Download game export</button>
+    <button (click)="exportPuzzleCancel()">Cancel</button>
+  </div>
+  <div *ngIf="prompts.importPrompt.open">
+    <input type="file" (change)="importPuzzleFile($event)" accept="application/json">
+    <div *ngIf="prompts.importPrompt.fileImportError">
+      {{ prompts.importPrompt.fileImportError }}
+    </div>
+    <button (click)="importPuzzleCancel()">Cancel</button>
+  </div>
 </div>

@@ -1,9 +1,17 @@
-import { ElementRef, Component, HostListener, OnDestroy, ViewChild, AfterViewInit } from '@angular/core';
+import { ChangeDetectorRef, ElementRef, Component, HostListener, OnDestroy, ViewChild, AfterViewInit } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { debounce, get } from 'lodash';
+import { get } from 'lodash';
 
 import { GameService } from '../../services/game.service';
-import { GameData, SquareOptions } from '../../constants/game';
+import {
+  GameData,
+  GameSquare,
+  SquareOptions,
+  MAX_GAME_COLS,
+  MAX_GAME_ROWS,
+  MIN_GAME_COLS,
+  MIN_GAME_ROWS
+} from '../../constants/game';
 
 @Component({
   selector: 'app-start-page',
@@ -28,18 +36,21 @@ export class StartPageComponent implements OnDestroy, AfterViewInit {
     startInputsErrorMessage: null as string,
   };
 
-  constructor(private gameService: GameService) {
+  constructor(private gameService: GameService, private cdRef: ChangeDetectorRef) {
     this.gameSub = this.gameService.game$.subscribe((gameData) => {
+      this.startPageOpen = !gameData;
       this.currentGameData = gameData;
     });
   }
 
   ngAfterViewInit() {
     this.gameTableWidth = get(this.gameTableRef, 'nativeElement.clientWidth', 300);
+    this.cdRef.detectChanges();
 
     this.gameTablePoll = setInterval(() => {
       if (this.gameTableRef) {
        this.gameTableWidth = get(this.gameTableRef, 'nativeElement.clientWidth', 300);
+       this.cdRef.detectChanges();
       }
     }, 400);
   }
@@ -50,6 +61,26 @@ export class StartPageComponent implements OnDestroy, AfterViewInit {
     // Making sure this stops polling
     clearInterval(this.gameTablePoll);
     this.gameTablePoll = null;
+  }
+
+  gameCellClick(gameSquare: GameSquare): void {
+    this.gameService.gameCellClick(gameSquare);
+  }
+
+  gameCellMiddleClick(gameSquare: GameSquare): void {
+    this.gameService.gameCellMiddleClick(gameSquare);
+  }
+
+  gameCellRightClick(gameSquare: GameSquare): void {
+    this.gameService.gameCellRightClick(gameSquare);
+  }
+
+  gameCellMouseEnter(colIndex: number, rowIndex: number): void {
+    this.gameService.gameCellMouseEnter(colIndex, rowIndex);
+  }
+
+  gameCellMouseLeave(): void {
+    this.gameService.gameCellMouseLeave();
   }
 
   @HostListener('document:keydown', ['$event'])
@@ -140,9 +171,9 @@ export class StartPageComponent implements OnDestroy, AfterViewInit {
       return this.startPage.startInputsErrorMessage === null;
     };
 
-    if (!checkValid(rowCountInt, 1, 20, 'Row')) {
+    if (!checkValid(rowCountInt, MIN_GAME_ROWS, MAX_GAME_ROWS, 'Row')) {
       return;
-    } else if (!checkValid(colCountInt, 1, 20, 'Column')) {
+    } else if (!checkValid(colCountInt, MIN_GAME_COLS, MAX_GAME_COLS, 'Column')) {
       return;
     }
 
@@ -151,5 +182,9 @@ export class StartPageComponent implements OnDestroy, AfterViewInit {
       parseInt(this.startPage.columnCountInput, 10),
       parseInt(this.startPage.rowCountInput, 10)
     );
+  }
+
+  resetGame() {
+    this.gameService.clearGameData();
   }
 }

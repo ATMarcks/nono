@@ -1,16 +1,17 @@
 import { Injectable } from '@angular/core';
-import { Subject } from 'rxjs';
-import { debounce } from 'lodash';
+import { BehaviorSubject, Subject } from 'rxjs';
+import { debounce, map, unzip } from 'lodash';
 
-import { GameData, KeyboardMove, SquareOptions } from '../constants/game';
+import { GameData, GameSquare, KeyboardMove, SquareOptions } from '../constants/game';
 
 @Injectable({
   providedIn: 'root',
 })
 export class GameService {
-  private gameData: GameData = this.createNewGame(0, 0);
+  private gameData: GameData;
+  private savedGameDataStorageKey = 'savedGameData';
 
-  private gameSub = new Subject<GameData>();
+  private gameSub = new BehaviorSubject<GameData>(null);
   public game$ = this.gameSub.asObservable();
 
   private assistSub = new Subject<boolean>();
@@ -22,10 +23,60 @@ export class GameService {
     this.gameStateChange();
   }, 35);
 
-  constructor() { }
+  constructor() {
+    try {
+      const loadedGameData = JSON.parse(localStorage.getItem(this.savedGameDataStorageKey));
+
+      if (loadedGameData) {
+        this.gameData = loadedGameData;
+        this.gameStateChange();
+      }
+    } catch (ex) {
+      this.clearGameData();
+    }
+  }
+
+  saveGame = debounce(() => {
+    localStorage.setItem(this.savedGameDataStorageKey, JSON.stringify(this.gameData));
+  }, 500);
+
+  clearGameData() {
+    this.gameData = null;
+    localStorage.removeItem(this.savedGameDataStorageKey);
+    this.gameSub.next(this.gameData);
+  }
 
   gameStateChange() {
+    this.saveGame();
     this.gameSub.next(this.gameData);
+  }
+
+  // Assuming it is properly formatted, with 2d array of only 1 (filled) or 0 (not filled)
+  newGameFromImport(importData: number[][]) {
+    const newGame: GameData = this.createNewGame();
+
+    newGame.rows = importData.length;
+    newGame.cols = importData[0].length;
+    newGame.gameSquare = importData.map((row) => {
+      return map(row, col => {
+        return { squareSolution: col, currentSelectionType: null };
+      });
+    });
+
+    // TODO: SET COL NUMS, ROW NUMS, UPDATE GAME DATA, CALL STATE CHANGE
+
+    newGame.rowNumbers =
+      newGame.gameSquare.map((row) => {
+        return this.generateDisplayNumbers(...row.map(col => col.squareSolution));
+      });
+
+    newGame.colNumbers =
+      unzip(newGame.gameSquare).map((col) => {
+        return this.generateDisplayNumbers(...col.map(row => row.squareSolution));
+      });
+
+    this.gameData = newGame;
+    this.gameStateChange();
   }
 
   newGame(cols: number, rows: number): void {
@@ -33,7 +84,7 @@ export class GameService {
 
     const newGameSquareProperties = [];
 
-    // There must be at least one square filled in
+    // There must be at least one gameSquare filled in
     let anySquareASolution = false;
 
     newGame.rowNumbers = [];
@@ -52,7 +103,7 @@ export class GameService {
 
         row.push({
           squareSolution,
-          currentSelectionType: null,
+          currentSelectionType: null
         });
       }
 
@@ -71,17 +122,17 @@ export class GameService {
       newGame.colNumbers.push(this.generateDisplayNumbers(...colArr));
     }
 
-    newGame.squareProperties = newGameSquareProperties;
+    newGame.gameSquare = newGameSquareProperties;
 
     this.gameData = newGame;
-    this.gameSub.next(this.gameData);
+    this.gameStateChange();
   }
 
-  createNewGame(cols: number, rows: number): GameData {
+  createNewGame(cols?: number, rows?: number): GameData {
     return {
       rows,
       cols,
-      squareProperties: [[]],
+      gameSquare: [[]],
       colNumbers: [[]],
       rowNumbers: [[]],
       hoverCursor: {
@@ -121,7 +172,7 @@ export class GameService {
     return numbers;
   }
 
-  gameCellClick(squareProps): void {
+  gameCellClick(squareProps: GameSquare): void {
     if ([SquareOptions.Selected, SquareOptions.Crossed].includes(squareProps.currentSelectionType)) {
       squareProps.currentSelectionType = null;
     } else if ([null, SquareOptions.Marked, SquareOptions.Error].includes(squareProps.currentSelectionType)) {
@@ -138,7 +189,7 @@ export class GameService {
 
   checkIfSolved(): void {
     // check if solved
-    for (const row of this.gameData.squareProperties) {
+    for (const row of this.gameData.gameSquare) {
       for (const cell of row) {
         if (
           (!cell.squareSolution && cell.currentSelectionType === SquareOptions.Selected) ||
@@ -152,7 +203,7 @@ export class GameService {
     this.gameData.solved = true;
   }
 
-  gameCellMiddleClick(squareProps): void {
+  gameCellMiddleClick(squareProps: GameSquare): void {
     if (![SquareOptions.Selected, SquareOptions.Crossed].includes(squareProps.currentSelectionType)) {
       if (squareProps.currentSelectionType === null) {
         squareProps.currentSelectionType = SquareOptions.Marked;
@@ -163,7 +214,7 @@ export class GameService {
     this.gameStateChange();
   }
 
-  gameCellRightClick(squareProps): void {
+  gameCellRightClick(squareProps: GameSquare): void {
     if ([SquareOptions.Selected, SquareOptions.Crossed].includes(squareProps.currentSelectionType)) {
       squareProps.currentSelectionType = null;
     } else if ([SquareOptions.Marked, null, SquareOptions.Error].includes(squareProps.currentSelectionType)) {
@@ -277,7 +328,7 @@ export class GameService {
 
   getSquareProps(colIndex: number, rowIndex: number) {
     try {
-      return this.gameData.squareProperties[rowIndex][colIndex];
+      return this.gameData.gameSquare[rowIndex][colIndex];
     } catch (e) {
       console.error(e);
       return null;
@@ -288,7 +339,7 @@ export class GameService {
     // If we are toggling it on, do a check on all cells
     // Otherwise remove all error tagged squares
 
-    for (const squarePropsRow of this.gameData.squareProperties) {
+    for (const squarePropsRow of this.gameData.gameSquare) {
       for (const squareProps of squarePropsRow) {
         if (!this.gameData.assist) {
           if ((squareProps.currentSelectionType === SquareOptions.Selected && !squareProps.squareSolution) ||

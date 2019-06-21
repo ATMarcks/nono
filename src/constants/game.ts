@@ -1,3 +1,8 @@
+export const MAX_GAME_ROWS = 20;
+export const MIN_GAME_ROWS = 1;
+export const MAX_GAME_COLS = 20;
+export const MIN_GAME_COLS = 1;
+
 export enum SquareOptions {
   Selected, // Square is selected
   Crossed, // Square is marked out
@@ -12,18 +17,20 @@ export enum KeyboardMove {
   Left = 'ArrowLeft'
 }
 
+export interface GameSquare {
+  currentSelectionType: SquareOptions;
+  squareSolution: boolean;
+}
+
 export interface GameData {
   rows: number;
   cols: number;
-  squareProperties: {
-    currentSelectionType: SquareOptions | null,
-    squareSolution: boolean
-  }[][];
+  gameSquare: GameSquare[][];
   colNumbers: number[][];
   rowNumbers: number[][];
   hoverCursor: {
-    x: number; // Will be null if not on square
-    y: number; // Will be null if not on square
+    x: number; // Will be null if not on gameSquare
+    y: number; // Will be null if not on gameSquare
   };
   keyboardCursor: {
     x: number;

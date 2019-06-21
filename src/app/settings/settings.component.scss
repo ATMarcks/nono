@@ -1,14 +1,6 @@
-.dropdown-container {
-  display: flex;
-  justify-content:space-between;
-  flex-direction:column;
-  background-color: lightgrey;
-}
-
-.dropdown-item {
-  background-color: cornflowerblue;
-  width: 100px;
-  margin: 10px;
+.settings-icon {
+  float: left;
+  margin-top: .5em;
 }
 
 .settings-icon:hover {
@@ -31,3 +23,24 @@
   cursor: pointer;
 }
 
+.modal {
+  color: white;
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #25333D;
+  z-index: 200;
+  padding: calc(1px + .7vw + .6vh);
+  border-radius: calc(1px + .2vw + .2vh);
+}
+
+.darken-bg {
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 100%;
+  background-color: black;
+  opacity: 0.8;
+  z-index: 100;
+}
