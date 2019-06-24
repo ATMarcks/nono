@@ -1,30 +1,40 @@
-<div class="settings-icon">
-  <img class="settings-icon-svg" src="assets/baseline-settings-20px.svg">
+<div *ngIf="!settingsDropdownOpen" class="settings-icon">
+  <img class="settings-icon-svg" src="assets/baseline-settings-20px.svg" (click)="openSettingsDropdown()">
 </div>
 <div class="assist-text" (click)="gameService.assistToggle()">Assist: {{ assistOn ? 'On': 'Off' }}</div>
-<div (click)="prompts.newGamePrompt.open = true">
-  New Game
-</div>
-<div (click)="prompts.importPrompt.open = true">
-  Import Puzzle
-</div>
-<div (click)="prompts.exportPrompt.open = true">
-  Export Puzzle
+
+<div *ngIf="settingsDropdownOpen" class="settings-popup" #settingsDropdown>
+  <div (click)="prompts.newGamePrompt.open = true; settingsDropdownOpen = false;">
+    New Game
+  </div>
+  <div (click)="prompts.importPrompt.open = true; settingsDropdownOpen = false;">
+    Import Puzzle
+  </div>
+  <div (click)="prompts.exportPrompt.open = true; settingsDropdownOpen = false;">
+    Export Puzzle
+  </div>
 </div>
 
 <div *ngIf="anyPromptOpen()" class="darken-bg"></div>
 <div *ngIf="anyPromptOpen()" class="modal">
   <div *ngIf="prompts.newGamePrompt.open">
-    <label for="cols">Cols:</label>
-    <input type="text" id="cols" [(ngModel)]="prompts.newGamePrompt.cols">
-    <label for="rows">Rows:</label>
-    <input type="text" id="rows" [(ngModel)]="prompts.newGamePrompt.rows">
+    <label for="cols">Cols:&nbsp;</label>
+    <select class="form-item-right" id="cols" [(ngModel)]="prompts.newGamePrompt.cols">
+      <option *ngFor="let colSize of COL_SIZES" [value]="colSize">{{ colSize }}</option>
+    </select>
+    <br/><br/>
+    <label for="rows">Rows:&nbsp;</label>
+    <select class="form-item-right" id="rows" [(ngModel)]="prompts.newGamePrompt.rows">
+      <option *ngFor="let rowSize of ROW_SIZES" [value]="rowSize">{{ rowSize }}</option>
+    </select>
+    <br/><br/>
     <button (click)="newGame()">New Game</button>
     <button (click)="newGameCancel()">Close</button>
   </div>
   <div *ngIf="prompts.exportPrompt.open">
-    <label for="export-input">Filename:</label>
+    <label for="export-input">Filename:&nbsp;</label>
     <input type="text" id="export-input" [(ngModel)]="prompts.exportPrompt.filename">
+    <br/><br/>
     <button (click)="exportPuzzle()">Download game export</button>
     <button (click)="exportPuzzleCancel()">Cancel</button>
   </div>

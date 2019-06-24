@@ -63,8 +63,6 @@ export class GameService {
       });
     });
 
-    // TODO: SET COL NUMS, ROW NUMS, UPDATE GAME DATA, CALL STATE CHANGE
-
     newGame.rowNumbers =
       newGame.gameSquare.map((row) => {
         return this.generateDisplayNumbers(...row.map(col => col.squareSolution));
@@ -147,6 +145,7 @@ export class GameService {
       },
       solved: false,
       assist: false,
+      startTime: new Date(),
     };
   }
 

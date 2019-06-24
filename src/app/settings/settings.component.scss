@@ -3,8 +3,17 @@
   margin-top: .5em;
 }
 
+.settings-popup {
+  position: absolute;
+  z-index: 50;
+}
+
 .settings-icon:hover {
   cursor: pointer;
+}
+
+.form-item-right {
+  float: right;
 }
 
 .settings-icon-svg {

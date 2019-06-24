@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
 import { cloneDeep, map } from 'lodash';
 
 import { SettingsService } from '../../services/settings.service';
 import { GameService } from '../../services/game.service';
+import { COL_SIZES, ROW_SIZES } from '../../constants/game';
 
 @Component({
   selector: 'app-settings',
@@ -10,7 +11,12 @@ import { GameService } from '../../services/game.service';
   styleUrls: ['./settings.component.scss']
 })
 export class SettingsComponent implements OnInit {
+  @ViewChild('settingsDropdown', { static: false }) settingsDropdown: ElementRef;
+
+  public settingsDropdownOpen = false;
   public assistOn = false;
+  public COL_SIZES = COL_SIZES;
+  public ROW_SIZES = ROW_SIZES;
 
   readonly init = {
     newGamePrompt: {
@@ -36,14 +42,31 @@ export class SettingsComponent implements OnInit {
     importPrompt: cloneDeep(this.init.importPrompt)
   };
 
-  constructor(public settingsService: SettingsService, public gameService: GameService) {
+  @HostListener('document:click', ['$event.target'])
+  public onClick(targetElement) {
+    if (this.settingsDropdown && this.settingsDropdownOpen) {
+      const clickedInside = this.settingsDropdown.nativeElement.contains(targetElement);
+      if (!clickedInside) {
+        this.settingsDropdownOpen = false;
+      }
+    }
+  }
+
+  public openSettingsDropdown() {
+    // Needs to be after document.click HostListener
+    setTimeout(() => {
+      this.settingsDropdownOpen = true;
+    });
+  }
+
+  constructor(public settingsService: SettingsService,
+              public gameService: GameService) {
     this.gameService.assist$.subscribe((assistOn) => {
       this.assistOn = assistOn;
     });
   }
 
   newGame() {
-    // TODO: check cols/rows
     this.gameService.newGame(
       parseInt(this.prompts.newGamePrompt.cols, 10),
       parseInt(this.prompts.newGamePrompt.rows, 10)

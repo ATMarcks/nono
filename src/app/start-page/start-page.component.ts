@@ -187,4 +187,12 @@ export class StartPageComponent implements OnDestroy, AfterViewInit {
   resetGame() {
     this.gameService.clearGameData();
   }
+
+  colTrackBy(index: number, obj: any) {
+    return index;
+  }
+
+  rowTrackBy(index: number, obj: any) {
+    return index;
+  }
 }

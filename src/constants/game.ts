@@ -3,6 +3,20 @@ export const MIN_GAME_ROWS = 1;
 export const MAX_GAME_COLS = 20;
 export const MIN_GAME_COLS = 1;
 
+export const COL_SIZES = [
+  5,
+  10,
+  15,
+  20
+];
+
+export const ROW_SIZES = [
+  5,
+  10,
+  15,
+  20
+];
+
 export enum SquareOptions {
   Selected, // Square is selected
   Crossed, // Square is marked out
@@ -40,4 +54,5 @@ export interface GameData {
   };
   solved: boolean;
   assist: boolean;
+  startTime: Date;
 }
