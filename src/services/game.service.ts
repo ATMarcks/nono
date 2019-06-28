@@ -1,18 +1,22 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Subject } from 'rxjs';
-import { debounce, map, unzip } from 'lodash';
+import { BehaviorSubject, Subject, timer } from 'rxjs';
+import { debounce as rxjsDebounce } from 'rxjs/operators';
+import { debounce, get, map, set, throttle, unzip } from 'lodash';
 
-import { GameData, GameSquare, KeyboardMove, SquareOptions } from '../constants/game';
+import { msTimeFormat } from '../utils/utils';
+import { GameData, GameSquare, KeyboardMove, SquareOptions, GAME_SERVICE_TICK } from '../constants/game';
 
 @Injectable({
   providedIn: 'root',
 })
 export class GameService {
+  private timerInterval: number = null;
+
   private gameData: GameData;
   private savedGameDataStorageKey = 'savedGameData';
 
   private gameSub = new BehaviorSubject<GameData>(null);
-  public game$ = this.gameSub.asObservable();
+  public game$ = this.gameSub.asObservable().pipe(rxjsDebounce(() => timer(GAME_SERVICE_TICK)));
 
   private assistSub = new Subject<boolean>();
   public assist$ = this.assistSub.asObservable();
@@ -24,11 +28,31 @@ export class GameService {
   }, 35);
 
   constructor() {
+    this.startTimer();
+
     try {
-      const loadedGameData = JSON.parse(localStorage.getItem(this.savedGameDataStorageKey));
+      const loadedGameData: GameData = JSON.parse(localStorage.getItem(this.savedGameDataStorageKey));
 
       if (loadedGameData) {
+        // We can't just load the data, we have to also update the timer
+        set(
+          loadedGameData,
+          'timer.startTime',
+          Date.now() - get(loadedGameData, 'timer.msElapsed', 0)
+        );
+
+        set(
+          loadedGameData,
+          'timer.formattedTime',
+          msTimeFormat(get(loadedGameData, 'timer.msElapsed', 0))
+        );
+
         this.gameData = loadedGameData;
+
+        if (get(loadedGameData, 'everSolved', false)) {
+          this.stopTimer();
+        }
+
         this.gameStateChange();
       }
     } catch (ex) {
@@ -36,7 +60,7 @@ export class GameService {
     }
   }
 
-  saveGame = debounce(() => {
+  saveGame = throttle(() => {
     localStorage.setItem(this.savedGameDataStorageKey, JSON.stringify(this.gameData));
   }, 500);
 
@@ -46,8 +70,10 @@ export class GameService {
     this.gameSub.next(this.gameData);
   }
 
-  gameStateChange() {
-    this.saveGame();
+  gameStateChange(saveGame = true) {
+    if (saveGame) {
+      this.saveGame();
+    }
     this.gameSub.next(this.gameData);
   }
 
@@ -123,6 +149,7 @@ export class GameService {
     newGame.gameSquare = newGameSquareProperties;
 
     this.gameData = newGame;
+    this.startTimer();
     this.gameStateChange();
   }
 
@@ -144,8 +171,13 @@ export class GameService {
         hideCursorTimerTimeout: null,
       },
       solved: false,
+      everSolved: false,
       assist: false,
-      startTime: new Date(),
+      timer: {
+        startTime: Date.now(),
+        msElapsed: 0,
+        formattedTime: '00:00:00',
+      },
     };
   }
 
@@ -186,6 +218,24 @@ export class GameService {
     this.gameStateChange();
   }
 
+  startTimer(): void {
+    if (this.timerInterval === null) {
+      this.timerInterval = setInterval(() => {
+        if (this.gameData) {
+          const newMsElapsed = this.gameData.timer.msElapsed = Date.now() - this.gameData.timer.startTime;
+          this.gameData.timer.msElapsed = newMsElapsed;
+          this.gameData.timer.formattedTime = msTimeFormat(newMsElapsed);
+          this.gameStateChange();
+        }
+      }, 125);
+    }
+  }
+
+  stopTimer(): void {
+    clearInterval(this.timerInterval);
+    this.timerInterval = null;
+  }
+
   checkIfSolved(): void {
     // check if solved
     for (const row of this.gameData.gameSquare) {
@@ -200,6 +250,8 @@ export class GameService {
     }
 
     this.gameData.solved = true;
+    this.gameData.everSolved = true;
+    this.stopTimer(); // Stop timer after puzzle solve
   }
 
   gameCellMiddleClick(squareProps: GameSquare): void {

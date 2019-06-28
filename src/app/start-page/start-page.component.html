@@ -25,11 +25,11 @@
     </div>
   </div>
 </div>
-<div *ngIf="!startPageOpen">
+<div *ngIf="!startPageOpen && currentGameData">
   <div class="game-table-parent">
     <table class="game-table" #gameTable>
       <tr>
-        <td></td>
+        <td [style.color]="currentGameData.everSolved ? '#AADB1E' : 'white'">{{ currentGameData.timer.formattedTime }}</td>
         <td *ngFor="let colNumCollection of currentGameData.colNumbers; let colIndex = index;" class="number-cell-top" [ngStyle]="{ 'background-image': getTopNumberCellBackgroundImage(colIndex) }">
           <div class="bottom-align">
             <div *ngFor="let numVal of colNumCollection" class="number-inner-cell-display-top">

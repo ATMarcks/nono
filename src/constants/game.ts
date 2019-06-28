@@ -3,6 +3,8 @@ export const MIN_GAME_ROWS = 1;
 export const MAX_GAME_COLS = 20;
 export const MIN_GAME_COLS = 1;
 
+export const GAME_SERVICE_TICK = 75; // milliseconds
+
 export const COL_SIZES = [
   5,
   10,
@@ -53,6 +55,11 @@ export interface GameData {
     hideCursorTimerTimeout: ReturnType<typeof setTimeout>;
   };
   solved: boolean;
+  everSolved: boolean; // Flagged true if the puzzle has been finished, but squares were changed
   assist: boolean;
-  startTime: Date;
+  timer: {
+    startTime: number,
+    msElapsed: number,
+    formattedTime: string,
+  };
 }
