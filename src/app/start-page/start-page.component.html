@@ -5,10 +5,16 @@
   </div>
   <div class="start-display-options">
     <div class="input-item-margin">
-      Number of rows: <input class="start-input" size="1" min="1" max="20" type="number" name="rows" [(ngModel)]="startPage.rowCountInput">
+      Number of rows:
+      <select class="form-item-right" [(ngModel)]="startPage.rowCountInput">
+        <option *ngFor="let colSize of COL_SIZES" [value]="colSize">{{ colSize }}</option>
+      </select>
     </div>
     <div class="input-item-margin">
-      Number of columns: <input class="start-input" size="1" min="1" max="20" type="number" name="columns" [(ngModel)]="startPage.columnCountInput">
+      Number of columns:
+      <select class="form-item-right" [(ngModel)]="startPage.columnCountInput">
+        <option *ngFor="let colSize of COL_SIZES" [value]="colSize">{{ colSize }}</option>
+      </select>
     </div>
     <div>
       <button type="button" class="start-button" (click)="startClick()">Start</button>
@@ -33,14 +39,15 @@
         <td *ngFor="let colNumCollection of currentGameData.colNumbers; let colIndex = index;" class="number-cell-top" [ngStyle]="{ 'background-image': getTopNumberCellBackgroundImage(colIndex) }">
           <div class="bottom-align">
             <div *ngFor="let numVal of colNumCollection" class="number-inner-cell-display-top">
-              <div>{{ numVal }}</div>
+              <div>{{ numVal.value }}</div>
             </div>
           </div>
         </td>
       </tr>
-      <tr *ngFor="let row of currentGameData.gameSquare; let rowIndex = index; trackBy: rowTrackBy">
+      <tr *ngFor="let row of currentGameData.gameSquare; let rowIndex = index; trackBy: rowTrackBy"
+          [style.boxShadow]="getRowBottomBorder(rowIndex)">
         <td class="number-cell-left" [ngStyle]="{ 'background-image': getLeftNumberCellBackgroundImage(rowIndex) }">
-          <div *ngFor="let numVal of currentGameData.rowNumbers[rowIndex]" class="number-inner-cell-display-left">{{ numVal }}</div>
+          <div *ngFor="let numVal of currentGameData.rowNumbers[rowIndex].slice().reverse()" class="number-inner-cell-display-left">{{ numVal.value }}</div>
         </td>
         <td *ngFor="let col of row; let colIndex = index; trackBy: colTrackBy"
             class="game-cell"

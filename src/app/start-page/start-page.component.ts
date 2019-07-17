@@ -10,7 +10,9 @@ import {
   MAX_GAME_COLS,
   MAX_GAME_ROWS,
   MIN_GAME_COLS,
-  MIN_GAME_ROWS
+  MIN_GAME_ROWS,
+  COL_SIZES,
+  ROW_SIZES
 } from '../../constants/game';
 
 @Component({
@@ -27,6 +29,9 @@ export class StartPageComponent implements OnDestroy, AfterViewInit {
 
   public gameTablePoll: ReturnType<typeof setInterval>;
 
+  public COL_SIZES = COL_SIZES;
+  public ROW_SIZES = ROW_SIZES;
+
   public gameTableWidth = 100;
   public startPageOpen = true;
 
@@ -36,7 +41,10 @@ export class StartPageComponent implements OnDestroy, AfterViewInit {
     startInputsErrorMessage: null as string,
   };
 
-  constructor(private gameService: GameService, private cdRef: ChangeDetectorRef) {
+  constructor(
+    private gameService: GameService,
+    private cdRef: ChangeDetectorRef
+  ) {
     this.gameSub = this.gameService.game$.subscribe((gameData) => {
       this.startPageOpen = !gameData;
       this.currentGameData = gameData;
@@ -117,6 +125,14 @@ export class StartPageComponent implements OnDestroy, AfterViewInit {
     }
 
     return '#000000';
+  }
+
+  getRowBottomBorder(index: number) {
+    index += 1;
+
+    if (index % 5 === 0 && index !== this.currentGameData.gameSquare.length) {
+      return '0 2px 0 #1D5100';
+    }
   }
 
   getTopNumberCellBackgroundImage(colIndex: number): string {

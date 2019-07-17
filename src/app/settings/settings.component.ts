@@ -52,6 +52,10 @@ export class SettingsComponent implements OnInit {
     }
   }
 
+  public toggleAssist() {
+    this.gameService.assistToggle();
+  }
+
   public openSettingsDropdown() {
     // Needs to be after document.click HostListener
     setTimeout(() => {
@@ -59,8 +63,10 @@ export class SettingsComponent implements OnInit {
     });
   }
 
-  constructor(public settingsService: SettingsService,
-              public gameService: GameService) {
+  constructor(
+    private settingsService: SettingsService,
+    private gameService: GameService
+  ) {
     this.gameService.assist$.subscribe((assistOn) => {
       this.assistOn = assistOn;
     });
@@ -69,7 +75,8 @@ export class SettingsComponent implements OnInit {
   newGame() {
     this.gameService.newGame(
       parseInt(this.prompts.newGamePrompt.cols, 10),
-      parseInt(this.prompts.newGamePrompt.rows, 10)
+      parseInt(this.prompts.newGamePrompt.rows, 10),
+      this.assistOn
     );
   }
 

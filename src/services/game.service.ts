@@ -4,7 +4,7 @@ import { debounce as rxjsDebounce } from 'rxjs/operators';
 import { debounce, get, map, set, throttle, unzip } from 'lodash';
 
 import { msTimeFormat } from '../utils/utils';
-import { GameData, GameSquare, KeyboardMove, SquareOptions, GAME_SERVICE_TICK } from '../constants/game';
+import {GameData, GameSquare, KeyboardMove, SquareOptions, GAME_SERVICE_TICK, DisplayNumber} from '../constants/game';
 
 @Injectable({
   providedIn: 'root',
@@ -62,7 +62,7 @@ export class GameService {
 
   saveGame = throttle(() => {
     localStorage.setItem(this.savedGameDataStorageKey, JSON.stringify(this.gameData));
-  }, 500);
+  }, 5000);
 
   clearGameData() {
     this.gameData = null;
@@ -74,6 +74,8 @@ export class GameService {
     if (saveGame) {
       this.saveGame();
     }
+
+    this.assistSub.next(this.gameData.assist);
     this.gameSub.next(this.gameData);
   }
 
@@ -103,8 +105,8 @@ export class GameService {
     this.gameStateChange();
   }
 
-  newGame(cols: number, rows: number): void {
-    const newGame: GameData = this.createNewGame(cols, rows);
+  newGame(cols: number, rows: number, assist: boolean = false): void {
+    const newGame: GameData = this.createNewGame(cols, rows, assist);
 
     const newGameSquareProperties = [];
 
@@ -131,7 +133,7 @@ export class GameService {
         });
       }
 
-      newGame.rowNumbers.push(this.generateDisplayNumbers(...row.map(r => r.squareSolution).reverse()));
+      newGame.rowNumbers.push(this.generateDisplayNumbers(...row.map(r => r.squareSolution)));
       newGameSquareProperties.push(row);
     }
 
@@ -153,7 +155,7 @@ export class GameService {
     this.gameStateChange();
   }
 
-  createNewGame(cols?: number, rows?: number): GameData {
+  createNewGame(cols?: number, rows?: number, assist: boolean = false): GameData {
     return {
       rows,
       cols,
@@ -172,7 +174,7 @@ export class GameService {
       },
       solved: false,
       everSolved: false,
-      assist: false,
+      assist: !!assist,
       timer: {
         startTime: Date.now(),
         msElapsed: 0,
@@ -181,20 +183,23 @@ export class GameService {
     };
   }
 
-  generateDisplayNumbers(...values: boolean[]) {
-    const numbers = [];
+  generateDisplayNumbers(...values: boolean[]): DisplayNumber[] {
+    const numbers: DisplayNumber[] = [];
 
     let counting = false;
     values.forEach((cell) => {
       if (cell) {
-        if (counting === false) {
+        if (!counting) {
           counting = true;
-          numbers.push(1);
+          numbers.push({
+            value: 1,
+            solved: false,
+          });
         } else {
-          numbers[numbers.length - 1]++;
+          numbers[numbers.length - 1].value++;
         }
       } else {
-        if (counting === true) {
+        if (counting) {
           counting = false;
         }
       }
@@ -332,7 +337,7 @@ export class GameService {
     this.gameStateChange();
   }
 
-  keyPress(event: KeyboardEvent) {
+  keyPress(event: KeyboardEvent): void {
     if (this.gameData) {
       const hoverCursorX = this.gameData.hoverCursor.x;
       const hoverCursorY = this.gameData.hoverCursor.y;
@@ -386,6 +391,42 @@ export class GameService {
     }
   }
 
+  // rowIndex and colIndex are both optional - if both are null/undefined, will check entire game
+  checkIfRowOrColNumbersSolved(
+    { rowIndex, colIndex }: { rowIndex?: number, colIndex?: number } = { rowIndex: null, colIndex: null}
+  ) {
+    // TODO: Still need to implement this...
+    const noVals = [null, undefined];
+
+    if (noVals.includes(rowIndex) && noVals.includes(colIndex)) { // If nothing is passed in
+      this.gameData.gameSquare.forEach((gameRow, i) => {
+        const rowSolutionNumbers = this.gameData.rowNumbers[i];
+        // console.log({ rowSolutionNumbers });
+
+        gameRow.forEach((gameCell, j) => {
+          if (gameCell.currentSelectionType === SquareOptions.Selected) {
+
+          }
+        });
+      });
+
+      this.gameStateChange();
+      return;
+    }
+
+    // If a row index is passed in, check the rows
+    if (noVals.includes(rowIndex)) {
+
+    }
+
+    // If a col index is passed in, check the cols
+    if (noVals.includes(colIndex)) {
+
+    }
+
+    this.gameStateChange();
+  }
+
   assistToggle(): void {
     // If we are toggling it on, do a check on all cells
     // Otherwise remove all error tagged squares
@@ -404,6 +445,9 @@ export class GameService {
         }
       }
     }
+
+    // Update if display numbers are marked as solved
+    this.checkIfRowOrColNumbersSolved();
 
     this.checkIfSolved();
 

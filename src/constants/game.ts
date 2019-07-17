@@ -38,12 +38,17 @@ export interface GameSquare {
   squareSolution: boolean;
 }
 
+export interface DisplayNumber {
+  solved: boolean;
+  value: number;
+}
+
 export interface GameData {
   rows: number;
   cols: number;
   gameSquare: GameSquare[][];
-  colNumbers: number[][];
-  rowNumbers: number[][];
+  colNumbers: DisplayNumber[][];
+  rowNumbers: DisplayNumber[][];
   hoverCursor: {
     x: number; // Will be null if not on gameSquare
     y: number; // Will be null if not on gameSquare

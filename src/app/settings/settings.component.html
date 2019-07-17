@@ -1,7 +1,7 @@
 <div *ngIf="!settingsDropdownOpen" class="settings-icon">
   <img class="settings-icon-svg" src="assets/baseline-settings-20px.svg" (click)="openSettingsDropdown()">
 </div>
-<div class="assist-text" (click)="gameService.assistToggle()">Assist: {{ assistOn ? 'On': 'Off' }}</div>
+<div class="assist-text" (click)="toggleAssist()">Assist: {{ assistOn ? 'On': 'Off' }}</div>
 
 <div *ngIf="settingsDropdownOpen" class="settings-popup" #settingsDropdown>
   <div (click)="prompts.newGamePrompt.open = true; settingsDropdownOpen = false;">
