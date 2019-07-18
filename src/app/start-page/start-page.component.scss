@@ -83,10 +83,13 @@ td:nth-child(5n + 1):not(:first-child):not(:last-child) {
   // border-radius: calc(.4vh + .2vw);
 }
 
-.game-table {
+.game-table-container {
   margin-top: 3vh;
   border: calc(1px + 0.16vh + 0.2vw) solid black;
   border-radius: calc(.4vh + .2vw);
+}
+
+.game-table {
   background-color: black;
   box-shadow: 0px 3px 15px rgba(0,0,0,0.25);
   border-collapse: collapse;
