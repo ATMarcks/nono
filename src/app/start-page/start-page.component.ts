@@ -127,14 +127,6 @@ export class StartPageComponent implements OnDestroy, AfterViewInit {
     return '#000000';
   }
 
-  getRowBottomBorder(index: number) {
-    index += 1;
-
-    if (index % 5 === 0 && index !== this.currentGameData.gameSquare.length) {
-      return '0 2px 0 #1D5100';
-    }
-  }
-
   getTopNumberCellBackgroundImage(colIndex: number): string {
     if (this.currentGameData.hoverCursor.x === colIndex) {
       return 'linear-gradient(to bottom, rgba(205,53,23,0), rgba(205,53,23,1))';

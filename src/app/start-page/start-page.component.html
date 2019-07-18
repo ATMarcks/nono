@@ -34,22 +34,26 @@
 <div *ngIf="!startPageOpen && currentGameData">
   <div class="game-table-parent">
     <table class="game-table" #gameTable>
-      <tr>
+      <tr style="height: 100%;">
         <td class="info-display" [style.color]="currentGameData.everSolved ? '#AADB1E' : 'white'">{{ currentGameData.timer.formattedTime }}</td>
-        <td *ngFor="let colNumCollection of currentGameData.colNumbers; let colIndex = index;" class="number-cell-top" [ngStyle]="{ 'background-image': getTopNumberCellBackgroundImage(colIndex) }">
-          <div class="bottom-align">
+        <td *ngFor="let colNumCollection of currentGameData.colNumbers; let colIndex = index;">
+          <div class="number-cell-top" [ngStyle]="{ 'background-image': getTopNumberCellBackgroundImage(colIndex) }">
             <div *ngFor="let numVal of colNumCollection" class="number-inner-cell-display-top">
               <div>{{ numVal.value }}</div>
             </div>
           </div>
         </td>
       </tr>
-      <tr *ngFor="let row of currentGameData.gameSquare; let rowIndex = index; trackBy: rowTrackBy"
-          [style.boxShadow]="getRowBottomBorder(rowIndex)">
-        <td class="number-cell-left" [ngStyle]="{ 'background-image': getLeftNumberCellBackgroundImage(rowIndex) }">
-          <div *ngFor="let numVal of currentGameData.rowNumbers[rowIndex].slice().reverse()" class="number-inner-cell-display-left">{{ numVal.value }}</div>
+      <tr *ngFor="let row of currentGameData.gameSquare; let rowIndex = index; trackBy: rowTrackBy">
+        <td>
+          <div class="number-cell-left" style="display: flex; justify-content: flex-end; align-content: center;" [ngStyle]="{ 'background-image': getLeftNumberCellBackgroundImage(rowIndex) }">
+            <div *ngFor="let numVal of currentGameData.rowNumbers[rowIndex]" class="number-inner-cell-display-left">
+              {{ numVal.value }}
+            </div>
+          </div>
         </td>
-        <td *ngFor="let col of row; let colIndex = index; trackBy: colTrackBy"
+        <td *ngFor="let col of row; let colIndex = index; trackBy: colTrackBy">
+          <div
             class="game-cell"
             [style.border-color]="getCellBorderColor(colIndex, rowIndex)"
             [style.background-color]="getBackgroundColor(col, rowIndex)"
@@ -58,9 +62,10 @@
             (mouseenter)="gameCellMouseEnter(colIndex, rowIndex)"
             (mouseleave)="gameCellMouseLeave()"
             (contextmenu)="gameCellRightClick(col)">
-          <div class="inner-cell-display">
-            <div style="height: 80%; width: 80%; margin: auto;">
-              <img *ngIf="![null, squareOptionsEnum.Selected].includes(col.currentSelectionType)" class="cell-icon" [src]="getGameCellImageSrc(col)">
+            <div class="inner-cell-display">
+              <div>
+                <img *ngIf="![null, squareOptionsEnum.Selected].includes(col.currentSelectionType)" class="cell-icon" [src]="getGameCellImageSrc(col)">
+              </div>
             </div>
           </div>
         </td>

@@ -3,6 +3,16 @@
   to   { opacity: 1}
 }
 
+table, tr, td { height: 100%; }
+
+// Draw gridlines
+tr:nth-child(5n + 1):not(:first-child):not(:last-child) {
+  border-bottom: 3px solid #444444;
+}
+td:nth-child(5n + 1):not(:first-child):not(:last-child) {
+  border-right: 3px solid #444444;
+}
+
 .start-page-error-input {
   color: white;
   background-color: black;
@@ -22,7 +32,6 @@
   justify-content: center;
   align-items: center;
   margin-bottom: .5em;
-
   color: white;
   font-size: calc(10px + 10vw);
 }
@@ -70,6 +79,8 @@
   flex: 1;
   align-items: center;
   flex-direction: column;
+  // border: calc(1px + 0.16vh + 0.2vw) solid black;
+  // border-radius: calc(.4vh + .2vw);
 }
 
 .game-table {
@@ -78,6 +89,7 @@
   border-radius: calc(.4vh + .2vw);
   background-color: black;
   box-shadow: 0px 3px 15px rgba(0,0,0,0.25);
+  border-collapse: collapse;
 }
 
 .game-cell {
@@ -85,7 +97,7 @@
   background-color: #919FA8;
   border-radius: calc(.4vh + .2vw);
   height: calc(1px + 1.8vh + 0.7vw);
-  width: calc(1px + 1.8vh + 0.7vw);;
+  width: calc(1px + 1.8vh + 0.7vw);
   border: calc(1px + 0.10vh + 0.06vw) solid;
 }
 
@@ -105,40 +117,37 @@
   color: white;
   font-size: calc(.8vw + .7vh);
   padding-bottom: calc(.2vw + .2vh);
-  margin: 0 auto;
 }
 
 .number-inner-cell-display-left {
   color: white;
   font-size: calc(.8vw + .7vh);
-  float: right;
   padding-right: calc(.5vw + .5vh);
-  display:inline-block;
+  display: flex;
+  align-items: center;
 }
 
 .settings-component {
   margin-top: .5em;
 }
 
-.bottom-align {
-  display: flex;
-  align-items: flex-end;
-  flex-direction: column;
-  justify-content: center;
-}
-
 .number-cell-top {
-  vertical-align: bottom;
-  text-align: center;
-  padding-top: calc(.2vw + .2vh);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
   border-radius: calc(.4vh + .2vw);
   border: calc(1px + 0.10vh + 0.06vw) solid black;
+  margin-top: calc(.2vw + .2vh);
+  width: calc(1px + 1.8vh + 0.7vw);
+  height: 94%; // TODO: 94% is a hack - not perfect, but height: 100% doesn't work quite right
 }
 
 .number-cell-left {
   padding-left: calc(.5vw + .5vh);
   border-radius: calc(.4vh + .2vw);
   border: calc(1px + 0.10vh + 0.06vw) solid black;
+  height: calc(1px + 1.8vh + 0.7vw);
 }
 
 .cell-icon {
