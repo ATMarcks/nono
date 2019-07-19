@@ -120,7 +120,7 @@ td:nth-child(5n + 1):not(:first-child):not(:last-child) {
 .number-inner-cell-display-top {
   color: white;
   font-size: calc(.8vw + .7vh);
-  padding-bottom: calc(.2vw + .2vh);
+  padding-bottom: calc(.35vw + .35vh);
 }
 
 .number-inner-cell-display-left {
@@ -141,10 +141,10 @@ td:nth-child(5n + 1):not(:first-child):not(:last-child) {
   align-items: center;
   justify-content: flex-end;
   border-radius: calc(.4vh + .2vw);
+  padding-top: calc(.4vh + .4vw);
   border: calc(1px + 0.10vh + 0.06vw) solid black;
-  margin-top: calc(.2vw + .2vh);
   width: calc(1px + 1.8vh + 0.7vw);
-  height: 94%; // TODO: 94% is a hack - not perfect, but height: 100% doesn't work quite right
+  height: 100%;
 }
 
 .number-cell-left {

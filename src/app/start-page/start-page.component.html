@@ -37,7 +37,7 @@
       <table class="game-table" #gameTable>
         <tr style="height: 100%;">
           <td class="info-display" [style.color]="currentGameData.everSolved ? '#AADB1E' : 'white'">{{ currentGameData.timer.formattedTime }}</td>
-          <td *ngFor="let colNumCollection of currentGameData.colNumbers; let colIndex = index;">
+          <td *ngFor="let colNumCollection of currentGameData.colNumbers; let colIndex = index;" style="height: 100%;">
             <div class="number-cell-top" [ngStyle]="{ 'background-image': getTopNumberCellBackgroundImage(colIndex) }">
               <div *ngFor="let numVal of colNumCollection" class="number-inner-cell-display-top">
                 <div>{{ numVal.value }}</div>
