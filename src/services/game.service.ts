@@ -208,7 +208,9 @@ export class GameService {
     return numbers;
   }
 
-  gameCellClick(squareProps: GameSquare): void {
+  gameCellClick(rowIndex: number, colIndex: number): void {
+    const squareProps = this.getSquareProps(rowIndex, colIndex);
+
     if ([SquareOptions.Selected, SquareOptions.Crossed].includes(squareProps.currentSelectionType)) {
       squareProps.currentSelectionType = null;
     } else if ([null, SquareOptions.Marked, SquareOptions.Error].includes(squareProps.currentSelectionType)) {
@@ -219,7 +221,7 @@ export class GameService {
       }
     }
 
-    this.checkIfRowOrColNumbersSolved();
+    this.checkIfRowOrColNumbersSolved({ rowIndex, colIndex });
 
     this.checkIfSolved();
     this.gameStateChange();
@@ -261,7 +263,9 @@ export class GameService {
     this.stopTimer(); // Stop timer after puzzle solve
   }
 
-  gameCellMiddleClick(squareProps: GameSquare): void {
+  gameCellMiddleClick(rowIndex: number, colIndex: number): void {
+    const squareProps = this.getSquareProps(rowIndex, colIndex);
+
     if (![SquareOptions.Selected, SquareOptions.Crossed].includes(squareProps.currentSelectionType)) {
       if (squareProps.currentSelectionType === null) {
         squareProps.currentSelectionType = SquareOptions.Marked;
@@ -272,7 +276,9 @@ export class GameService {
     this.gameStateChange();
   }
 
-  gameCellRightClick(squareProps: GameSquare): void {
+  gameCellRightClick(rowIndex: number, colIndex: number): void {
+    const squareProps = this.getSquareProps(rowIndex, colIndex);
+
     if ([SquareOptions.Selected, SquareOptions.Crossed].includes(squareProps.currentSelectionType)) {
       squareProps.currentSelectionType = null;
     } else if ([SquareOptions.Marked, null, SquareOptions.Error].includes(squareProps.currentSelectionType)) {
@@ -283,11 +289,11 @@ export class GameService {
       }
     }
 
-    this.checkIfRowOrColNumbersSolved();
+    this.checkIfRowOrColNumbersSolved({ rowIndex, colIndex });
     this.gameStateChange();
   }
 
-  gameCellMouseEnter(colIndex: number, rowIndex: number): void {
+  gameCellMouseEnter(rowIndex: number, colIndex: number): void {
     this.gameCellMouseLeave.cancel();
     this.gameData.hoverCursor.y = rowIndex;
     this.gameData.hoverCursor.x = colIndex;
@@ -350,21 +356,21 @@ export class GameService {
 
       if (hoverCursorX !== null && hoverCursorY !== null) {
         if (event.code === 'KeyZ') {
-          this.gameCellClick(this.getSquareProps(hoverCursorX, hoverCursorY));
+          this.gameCellClick(hoverCursorY, hoverCursorX);
         } else if (event.code === 'KeyX') {
-          this.gameCellRightClick(this.getSquareProps(hoverCursorX, hoverCursorY));
+          this.gameCellRightClick(hoverCursorY, hoverCursorX);
         } else if (event.code === 'KeyC') {
-          this.gameCellMiddleClick(this.getSquareProps(hoverCursorX, hoverCursorY));
+          this.gameCellMiddleClick(hoverCursorY, hoverCursorX);
         }
       }
 
       if (!this.gameData.keyboardCursor.hidden) {
         if (event.code === 'KeyA') {
-          this.gameCellClick(this.getSquareProps(keyboardCursorX, keyboardCursorY));
+          this.gameCellClick(keyboardCursorY, keyboardCursorX);
         } else if (event.code === 'KeyS') {
-          this.gameCellRightClick(this.getSquareProps(keyboardCursorX, keyboardCursorY));
+          this.gameCellRightClick(keyboardCursorY, keyboardCursorX);
         } else if (event.code === 'KeyD') {
-          this.gameCellMiddleClick(this.getSquareProps(keyboardCursorX, keyboardCursorY));
+          this.gameCellMiddleClick(keyboardCursorY, keyboardCursorX);
         }
       } else if (this.keyPressAnyKeyboardControl(event.code)) {
         this.showKeyboardCursor();
@@ -386,7 +392,7 @@ export class GameService {
     return [KeyboardMove.Right, KeyboardMove.Left, KeyboardMove.Down, KeyboardMove.Up, 'KeyA', 'KeyS', 'KeyD'].includes(eventCode);
   }
 
-  getSquareProps(colIndex: number, rowIndex: number) {
+  getSquareProps(rowIndex: number, colIndex: number) {
     try {
       return this.gameData.gameSquare[rowIndex][colIndex];
     } catch (e) {
@@ -487,7 +493,7 @@ export class GameService {
     } else {
       const transposedGameData = unzip(this.gameData.gameSquare);
       const gameColData = get(transposedGameData, `[${colIndex}]`);
-      const gameColNumbers = get(transposedGameData, `[${colIndex}]`);
+      const gameColNumbers = get(this.gameData.colNumbers, `[${colIndex}]`);
 
       if (![gameColData, gameColNumbers].includes(undefined)) {
         checker(gameColData, gameColNumbers);

@@ -63,20 +63,20 @@ export class StartPageComponent implements OnDestroy, AfterViewInit {
     this.gameTablePoll = null;
   }
 
-  gameCellClick(gameSquare: GameSquare): void {
-    this.gameService.gameCellClick(gameSquare);
+  gameCellClick(rowIndex: number, colIndex: number): void {
+    this.gameService.gameCellClick(rowIndex, colIndex);
   }
 
-  gameCellMiddleClick(gameSquare: GameSquare): void {
-    this.gameService.gameCellMiddleClick(gameSquare);
+  gameCellMiddleClick(rowIndex: number, colIndex: number): void {
+    this.gameService.gameCellMiddleClick(rowIndex, colIndex);
   }
 
-  gameCellRightClick(gameSquare: GameSquare): void {
-    this.gameService.gameCellRightClick(gameSquare);
+  gameCellRightClick(rowIndex: number, colIndex: number): void {
+    this.gameService.gameCellRightClick(rowIndex, colIndex);
   }
 
-  gameCellMouseEnter(colIndex: number, rowIndex: number): void {
-    this.gameService.gameCellMouseEnter(colIndex, rowIndex);
+  gameCellMouseEnter(rowIndex: number, colIndex: number): void {
+    this.gameService.gameCellMouseEnter(rowIndex, colIndex);
   }
 
   gameCellMouseLeave(): void {
@@ -99,7 +99,7 @@ export class StartPageComponent implements OnDestroy, AfterViewInit {
     }
   }
 
-  getCellBorderColor(colIndex: number, rowIndex: number): string {
+  getCellBorderColor(rowIndex: number, colIndex: number): string {
     // Hover color takes precedence over keyboard color
     if (
       this.currentGameData.hoverCursor.x === colIndex &&
