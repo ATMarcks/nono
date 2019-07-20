@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Subject, timer } from 'rxjs';
 import { debounce as rxjsDebounce } from 'rxjs/operators';
-import { debounce, get, map, set, throttle, unzip } from 'lodash';
+import { clone, debounce, get, map, set, throttle, unzip } from 'lodash';
 
 import { msTimeFormat } from '../utils/utils';
 import {GameData, GameSquare, KeyboardMove, SquareOptions, GAME_SERVICE_TICK, DisplayNumber} from '../constants/game';
@@ -219,6 +219,8 @@ export class GameService {
       }
     }
 
+    this.checkIfRowOrColNumbersSolved();
+
     this.checkIfSolved();
     this.gameStateChange();
   }
@@ -280,6 +282,8 @@ export class GameService {
         squareProps.currentSelectionType = SquareOptions.Crossed;
       }
     }
+
+    this.checkIfRowOrColNumbersSolved();
     this.gameStateChange();
   }
 
@@ -392,36 +396,104 @@ export class GameService {
   }
 
   // rowIndex and colIndex are both optional - if both are null/undefined, will check entire game
+  // "Solved" is a bit of a misnomer, as it doesn't actually indicate if the correct squares are solved
   checkIfRowOrColNumbersSolved(
     { rowIndex, colIndex }: { rowIndex?: number, colIndex?: number } = { rowIndex: null, colIndex: null}
   ) {
-    // TODO: Still need to implement this...
+
+    const checker = (gameCells: GameSquare[], displayNumbers: DisplayNumber[], runReversed = true) => {
+      const solutionNumbers = displayNumbers.map(x => x.value);
+
+      // When a solution number is successfully validated, increment this up by 1
+      let lastCheckedIndex = -1;
+
+      // When a cell is selected, this index gets set
+      // If the next cell is selected, it says the same; otherwise, it gets set to null
+      let selectedCellIndexStart: number = null;
+
+      // While iterating across the cells, this is flagged to be the last cell that has been marked
+      // Starts at -1 because the a cell at index -1 is effectively a marked square
+      let lastMarkedCellIndex = -1;
+
+      for (let currentCellIndex = 0; currentCellIndex < gameCells.length; currentCellIndex++) {
+        const gameCell = gameCells[currentCellIndex];
+        if (gameCell.currentSelectionType === SquareOptions.Crossed) {
+          if (selectedCellIndexStart !== null) {
+            // If we are traversing over a set of consecutively selected cells,
+            // and come across a marked cell, then check if solution is correct
+            if (solutionNumbers[lastCheckedIndex + 1] === currentCellIndex - selectedCellIndexStart) {
+              // Set solved
+              displayNumbers[lastCheckedIndex + 1].solved = true;
+              lastCheckedIndex++;
+            } else {
+              // Set rest to unsolved unless we are on a second pass
+              if (runReversed) {
+                for (let i = lastCheckedIndex + 1; i < displayNumbers.length; i++) {
+                  displayNumbers[i].solved = false;
+                }
+                checker(clone(gameCells).reverse(), clone(displayNumbers).reverse(), false);
+              }
+              return;
+            }
+          }
+          lastMarkedCellIndex = currentCellIndex;
+          selectedCellIndexStart = null;
+        } else if (gameCell.currentSelectionType === SquareOptions.Selected) {
+          if (selectedCellIndexStart === null) {
+            selectedCellIndexStart = currentCellIndex;
+          }
+          // Otherwise continue
+        } else if ([null, SquareOptions.Error].includes(gameCell.currentSelectionType)) {
+          this.gameStateChange();
+          if (runReversed) {
+            for (let i = lastCheckedIndex + 1; i < displayNumbers.length; i++) {
+              displayNumbers[i].solved = false;
+            }
+            checker(clone(gameCells).reverse(), clone(displayNumbers).reverse(), false);
+          }
+          return;
+        }
+      }
+
+      if (runReversed === true) {
+        checker(clone(gameCells).reverse(), clone(displayNumbers).reverse(), false);
+      } else {
+        this.gameStateChange();
+      }
+    };
+
     const noVals = [null, undefined];
 
-    if (noVals.includes(rowIndex) && noVals.includes(colIndex)) { // If nothing is passed in
-      this.gameData.gameSquare.forEach((gameRow, i) => {
-        const rowSolutionNumbers = this.gameData.rowNumbers[i];
-        // console.log({ rowSolutionNumbers });
-
-        gameRow.forEach((gameCell, j) => {
-          if (gameCell.currentSelectionType === SquareOptions.Selected) {
-
-          }
-        });
-      });
-
-      this.gameStateChange();
-      return;
-    }
-
-    // If a row index is passed in, check the rows
+    // Check rows
     if (noVals.includes(rowIndex)) {
+      this.gameData.gameSquare.forEach((gameRow, i) => {
+        checker(gameRow, this.gameData.rowNumbers[i]);
+      });
+    } else {
+      const gameRowData = get(this.gameData.gameSquare, `[${rowIndex}]`);
+      const gameRowNumbers = get(this.gameData.rowNumbers, `[${rowIndex}]`);
 
+      if (![gameRowData, gameRowNumbers].includes(undefined)) {
+        checker(gameRowData, gameRowNumbers);
+      } else {
+        console.error('Bad row index');
+      }
     }
 
-    // If a col index is passed in, check the cols
     if (noVals.includes(colIndex)) {
+      unzip(this.gameData.gameSquare).forEach((gameCol, i) => {
+        checker(gameCol, this.gameData.colNumbers[i]);
+      });
+    } else {
+      const transposedGameData = unzip(this.gameData.gameSquare);
+      const gameColData = get(transposedGameData, `[${colIndex}]`);
+      const gameColNumbers = get(transposedGameData, `[${colIndex}]`);
 
+      if (![gameColData, gameColNumbers].includes(undefined)) {
+        checker(gameColData, gameColNumbers);
+      } else {
+        console.error('Bad col index');
+      }
     }
 
     this.gameStateChange();

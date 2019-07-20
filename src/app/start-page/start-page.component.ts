@@ -1,6 +1,10 @@
-import { ChangeDetectorRef, ElementRef, Component, HostListener, OnDestroy, ViewChild, AfterViewInit } from '@angular/core';
+import {
+  Component,
+  HostListener,
+  OnDestroy,
+  AfterViewInit,
+} from '@angular/core';
 import { Subscription } from 'rxjs';
-import { get } from 'lodash';
 
 import { GameService } from '../../services/game.service';
 import {
@@ -21,8 +25,6 @@ import {
   styleUrls: ['./start-page.component.scss']
 })
 export class StartPageComponent implements OnDestroy, AfterViewInit {
-  @ViewChild('gameTable', { static: false }) gameTableRef: ElementRef;
-
   public gameSub: Subscription;
   public currentGameData: GameData;
   public squareOptionsEnum = SquareOptions;
@@ -32,7 +34,6 @@ export class StartPageComponent implements OnDestroy, AfterViewInit {
   public COL_SIZES = COL_SIZES;
   public ROW_SIZES = ROW_SIZES;
 
-  public gameTableWidth = 100;
   public startPageOpen = true;
 
   public startPage = {
@@ -42,8 +43,7 @@ export class StartPageComponent implements OnDestroy, AfterViewInit {
   };
 
   constructor(
-    private gameService: GameService,
-    private cdRef: ChangeDetectorRef
+    private gameService: GameService
   ) {
     this.gameSub = this.gameService.game$.subscribe((gameData) => {
       this.startPageOpen = !gameData;
@@ -52,15 +52,7 @@ export class StartPageComponent implements OnDestroy, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    this.gameTableWidth = get(this.gameTableRef, 'nativeElement.clientWidth', 300);
-    this.cdRef.detectChanges();
 
-    this.gameTablePoll = setInterval(() => {
-      if (this.gameTableRef) {
-       this.gameTableWidth = get(this.gameTableRef, 'nativeElement.clientWidth', 300);
-       this.cdRef.detectChanges();
-      }
-    }, 400);
   }
 
   ngOnDestroy(): void {
