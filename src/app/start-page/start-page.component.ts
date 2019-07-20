@@ -10,6 +10,8 @@ import { GameService } from '../../services/game.service';
 import {
   GameData,
   SquareOptions,
+  getGameCellIconAssetPath,
+  ICON_ASSET_PATHS,
   MAX_GAME_COLS,
   MAX_GAME_ROWS,
   MIN_GAME_COLS,
@@ -51,7 +53,12 @@ export class StartPageComponent implements OnDestroy, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    // TODO: Preload SVG
+    // Preload icons
+    const images = [];
+    Object.keys(ICON_ASSET_PATHS).forEach((iconAssetKey, i) => {
+      images.push(new Image());
+      images[i].src = ICON_ASSET_PATHS[iconAssetKey];
+    });
   }
 
   ngOnDestroy(): void {
@@ -139,13 +146,7 @@ export class StartPageComponent implements OnDestroy, AfterViewInit {
   }
 
   getGameCellImageSrc(squareProps): string {
-    if (squareProps.currentSelectionType === SquareOptions.Marked) {
-      return 'assets/baseline-help_outline-24px.svg';
-    } else if (squareProps.currentSelectionType === SquareOptions.Crossed) {
-      return 'assets/baseline-clear-24px.svg';
-    } else if (squareProps.currentSelectionType === SquareOptions.Error) {
-      return 'assets/baseline-highlight_off-24px.svg';
-    }
+    return getGameCellIconAssetPath(squareProps.currentSelectionType);
   }
 
   startClick(): void {

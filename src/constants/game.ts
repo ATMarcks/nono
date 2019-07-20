@@ -19,11 +19,28 @@ export const ROW_SIZES = [
   20
 ];
 
+export const ICON_ASSET_PATHS = {
+  Marked: 'assets/baseline-help_outline-24px.svg',
+  Crossed: 'assets/baseline-clear-24px.svg',
+  Error: 'assets/baseline-highlight_off-24px.svg'
+};
+
 export enum SquareOptions {
   Selected, // Square is selected
   Crossed, // Square is marked out
   Marked, // Square has a note symbol on it
   Error // Selection made in error
+}
+
+export function getGameCellIconAssetPath(squareOption: SquareOptions) {
+  switch (squareOption) {
+    case SquareOptions.Marked:
+      return ICON_ASSET_PATHS.Marked;
+    case SquareOptions.Crossed:
+      return ICON_ASSET_PATHS.Crossed;
+    case SquareOptions.Error:
+      return ICON_ASSET_PATHS.Error;
+  }
 }
 
 export enum KeyboardMove {
