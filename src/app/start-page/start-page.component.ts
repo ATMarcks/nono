@@ -9,7 +9,6 @@ import { Subscription } from 'rxjs';
 import { GameService } from '../../services/game.service';
 import {
   GameData,
-  GameSquare,
   SquareOptions,
   MAX_GAME_COLS,
   MAX_GAME_ROWS,
@@ -52,7 +51,7 @@ export class StartPageComponent implements OnDestroy, AfterViewInit {
   }
 
   ngAfterViewInit() {
-
+    // TODO: Preload SVG
   }
 
   ngOnDestroy(): void {
