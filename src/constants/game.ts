@@ -19,6 +19,7 @@ export const ROW_SIZES = [
   20
 ];
 
+// NOTE: These are hardcoded in start-page.component.html for a bufix
 export const ICON_ASSET_PATHS = {
   Marked: 'assets/baseline-help_outline-24px.svg',
   Crossed: 'assets/baseline-clear-24px.svg',
