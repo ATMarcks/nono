@@ -1,3 +1,9 @@
+$game-cell-wh: calc(1px + 1.8vh + 0.7vw);
+$game-cell-border-size: calc(1px + 0.10vh + 0.06vw);
+$game-border-radius: calc(.4vh + .2vw);
+
+$thick-border: calc(1px + 0.16vh + 0.2vw);
+
 @keyframes fadein {
   from { opacity: 0}
   to   { opacity: 1}
@@ -28,8 +34,8 @@ div.number-cell-left div:nth-child(2) {
   color: white;
   background-color: black;
   margin-top: 0.5em;
-  border: calc(1px + 0.16vh + 0.2vw) solid black;
-  border-radius: calc(.4vh + .2vw);
+  border: $thick-border solid black;
+  border-radius: $game-border-radius;
 }
 
 .info-display {
@@ -60,7 +66,7 @@ div.number-cell-left div:nth-child(2) {
 .start-button {
   background-color: Transparent;
   background-repeat:no-repeat;
-  border-radius: calc(.4vh + .2vw);
+  border-radius: $game-border-radius;
   border: 3px solid white;
   padding: 15px;
   cursor:pointer;
@@ -91,14 +97,12 @@ div.number-cell-left div:nth-child(2) {
   flex: 1;
   align-items: center;
   flex-direction: column;
-  // border: calc(1px + 0.16vh + 0.2vw) solid black;
-  // border-radius: calc(.4vh + .2vw);
 }
 
 .game-table-container {
   box-shadow: 0 3px 15px rgba(0,0,0,0.3);
-  border: calc(1px + 0.16vh + 0.2vw) solid black;
-  border-radius: calc(.4vh + .2vw);
+  border: $thick-border solid black;
+  border-radius: $game-border-radius;
   background-color: black;
 }
 
@@ -110,21 +114,16 @@ div.number-cell-left div:nth-child(2) {
 .game-cell {
   transition: background-color 100ms linear, border 50ms linear;
   background-color: #919FA8;
-  border-radius: calc(.4vh + .2vw);
-  height: calc(1px + 1.8vh + 0.7vw);
-  width: calc(1px + 1.8vh + 0.7vw);
-  border: calc(1px + 0.10vh + 0.06vw) solid;
+  border-radius: $game-border-radius;
+  height: $game-cell-wh;
+  width: $game-cell-wh;
+  border: $game-cell-border-size solid;
 }
 
 .solved-display {
   color: white;
   font-size: calc(10px + 2vw);
   text-align: center;
-}
-
-.inner-cell-display {
-  height: calc(1px + 1.8vh + 0.7vw);
-  width: calc(1px + 1.8vh + 0.7vw);
 }
 
 .number-inner-cell-display-top {
@@ -147,7 +146,7 @@ div.number-cell-left div:nth-child(2) {
 .hide-top-px-number-cell {
   margin-bottom: auto;
   height: 2px;
-  width: calc(1px + 1.8vh + 0.7vw);;
+  width: $game-cell-wh;
   background-color: black;
 }
 
@@ -155,7 +154,7 @@ div.number-cell-left div:nth-child(2) {
 .hide-left-px-number-cell {
   margin-right: auto;
   width: 2px;
-  height: calc(1px + 1.8vh + 0.7vw);;
+  height: $game-cell-wh;
   background-color: black;
   color: black;
 }
@@ -166,8 +165,8 @@ div.number-cell-left div:nth-child(2) {
   align-items: center;
   justify-content: flex-end;
   border-radius: calc(.4vh + .2vw);
-  border: calc(1px + 0.10vh + 0.06vw) solid black;
-  width: calc(1px + 1.8vh + 0.7vw);
+  border: $game-cell-border-size solid black;
+  width: $game-cell-wh;
 }
 
 .number-cell-top-inner-pad {
@@ -180,16 +179,16 @@ div.number-cell-left div:nth-child(2) {
   justify-content: flex-end;
   align-content: center;
   border-radius: calc(.4vh + .2vw);
-  border: calc(1px + 0.10vh + 0.06vw) solid black;
-  height: calc(1px + 1.8vh + 0.7vw);
+  border: $game-cell-border-size solid black;
+  height: $game-cell-wh;
 }
 
 .cell-icon {
   position: absolute;
   top: 0;
   left: 0;
-  height: calc(1px + 1.8vh + 0.7vw);
-  width: calc(1px + 1.8vh + 0.7vw);
+  height: $game-cell-wh;
+  width: $game-cell-wh;
   transition: opacity 100ms;
   -moz-transistion: opacity 100ms;
   -webkit-transition: opacity 100ms;
