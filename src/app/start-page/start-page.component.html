@@ -79,9 +79,9 @@
     <div style="width: 100%;">
       <app-settings class="settings-component"></app-settings>
     </div>
-    <div *ngIf="currentGameData.solved" class="solved-display">
-      <br>
-      The puzzle has been solved&nbsp;<button class="start-button" (click)="resetGame()">Return to start page</button>
-    </div>
   </div>
+</div>
+<div *ngIf="currentGameData.solved" class="solved-display" style="position: absolute;">
+  <br>
+  The puzzle has been solved&nbsp;<button class="new-game-solved-button" (click)="resetGame()">Return to start page</button>
 </div>

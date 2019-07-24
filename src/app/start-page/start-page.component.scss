@@ -65,15 +65,28 @@ div.number-cell-left div:nth-child(2) {
 
 .start-button {
   background-color: Transparent;
-  background-repeat:no-repeat;
+  background-repeat: no-repeat;
   border-radius: $game-border-radius;
   border: 3px solid white;
   padding: 15px;
-  cursor:pointer;
+  cursor: pointer;
   overflow: hidden;
   outline:none;
   color: white;
   font-size: calc(10px + 1.7vw);
+  font-weight: bold;
+}
+
+.new-game-solved-button {
+  background-color: Transparent;
+  background-repeat: no-repeat;
+  border-radius: $game-border-radius;
+  border: 3px solid white;
+  padding: 10px;
+  cursor: pointer;
+  overflow: hidden;
+  outline: none;
+  color: white;
   font-weight: bold;
 }
 
@@ -122,7 +135,6 @@ div.number-cell-left div:nth-child(2) {
 
 .solved-display {
   color: white;
-  font-size: calc(10px + 2vw);
   text-align: center;
 }
 

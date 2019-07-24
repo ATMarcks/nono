@@ -1,4 +1,4 @@
-<div *ngIf="!settingsDropdownOpen" class="settings-icon">
+<div [style.visibility]="settingsDropdownOpen ? 'hidden' : 'visible'" class="settings-icon">
   <img class="settings-icon-svg" src="assets/baseline-settings-20px.svg" (click)="openSettingsDropdown()">
 </div>
 <div class="assist-text" (click)="toggleAssist()">Assist: {{ assistOn ? 'On': 'Off' }}</div>
