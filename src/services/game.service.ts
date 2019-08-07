@@ -82,7 +82,7 @@ export class GameService {
 
   saveGame = throttle(() => {
     localStorage.setItem(this.savedGameDataStorageKey, JSON.stringify(this.gameData));
-  }, 5000);
+  }, 1000);
 
   clearGameData() {
     this.gameData = null;

@@ -81,7 +81,7 @@
     </div>
   </div>
 </div>
-<div *ngIf="currentGameData.solved" class="solved-display" style="position: absolute;">
-  <br>
-  The puzzle has been solved&nbsp;<button class="new-game-solved-button" (click)="resetGame()">Return to start page</button>
+<div *ngIf="currentGameData?.solved && !startPageOpen" class="solved-display">
+  <br/>
+  <span style="display: inline-block;">The puzzle has been solved. Click on the cog to begin a new game.</span>
 </div>

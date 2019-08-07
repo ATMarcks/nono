@@ -1,3 +1,10 @@
+$game-cell-border-size: calc(1px + 0.10vh + 0.06vw);
+$game-border-radius: calc(.4vh + .2vw);
+
+#export-input {
+  width: 100%;
+}
+
 .settings-icon {
   float: left;
   margin-top: .5em;
@@ -5,7 +12,19 @@
 
 .settings-popup {
   position: absolute;
+  bottom: 0;
+  left: 0;
   z-index: 50;
+  color: white;
+  background-color: #444444;
+  padding: .5em;
+  border: $game-cell-border-size solid #313131;
+  border-radius: $game-border-radius;
+  box-shadow: 0 3px 15px rgba(0,0,0,0.3);
+}
+
+.settings-popup-item:hover {
+  cursor: pointer;
 }
 
 .settings-icon:hover {
@@ -43,15 +62,18 @@
   padding: calc(1px + .7vw + .6vh);
   border-radius: calc(1px + .2vw + .2vh);
   box-shadow: 0 3px 15px rgba(0,0,0,0.9);
+  width: 200px;
+  height: 100px;
 }
 
 .darken-bg {
   position: absolute;
   background-color: black;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
+  top: 50%;
+  left: 50%;
+  width: 100vw;
+  height: 100vh;
   opacity: 0.8;
   z-index: 100;
+  transform: translate(-50%, -50%);
 }

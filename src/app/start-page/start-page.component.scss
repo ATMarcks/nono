@@ -77,19 +77,6 @@ div.number-cell-left div:nth-child(2) {
   font-weight: bold;
 }
 
-.new-game-solved-button {
-  background-color: Transparent;
-  background-repeat: no-repeat;
-  border-radius: $game-border-radius;
-  border: 3px solid white;
-  padding: 10px;
-  cursor: pointer;
-  overflow: hidden;
-  outline: none;
-  color: white;
-  font-weight: bold;
-}
-
 .input-item-margin {
   margin-bottom: 1em;
 }
@@ -135,6 +122,11 @@ div.number-cell-left div:nth-child(2) {
 
 .solved-display {
   color: white;
+  left:0;
+  right:0;
+  margin-left:auto;
+  margin-right:auto;
+  position: absolute;
   text-align: center;
 }
 

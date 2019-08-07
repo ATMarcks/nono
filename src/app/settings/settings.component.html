@@ -4,13 +4,15 @@
 <div class="assist-text" (click)="toggleAssist()">Assist: {{ assistOn ? 'On': 'Off' }}</div>
 
 <div *ngIf="settingsDropdownOpen" class="settings-popup" #settingsDropdown>
-  <div (click)="prompts.newGamePrompt.open = true; settingsDropdownOpen = false;">
+  <div (click)="prompts.newGamePrompt.open = true; settingsDropdownOpen = false;" class="settings-popup-item">
     New Game
   </div>
-  <div (click)="prompts.importPrompt.open = true; settingsDropdownOpen = false;">
+  <hr/>
+  <div (click)="prompts.importPrompt.open = true; settingsDropdownOpen = false;" class="settings-popup-item">
     Import Puzzle
   </div>
-  <div (click)="prompts.exportPrompt.open = true; settingsDropdownOpen = false;">
+  <hr/>
+  <div (click)="prompts.exportPrompt.open = true; settingsDropdownOpen = false;" class="settings-popup-item">
     Export Puzzle
   </div>
 </div>
@@ -29,20 +31,22 @@
     </select>
     <br/><br/>
     <button (click)="newGame()">New Game</button>
-    <button (click)="newGameCancel()">Close</button>
+    <button (click)="newGameCancel()" style="float: right;">Close</button>
   </div>
   <div *ngIf="prompts.exportPrompt.open">
-    <label for="export-input">Filename:&nbsp;</label>
+    <label for="export-input">Filename</label>
     <input type="text" id="export-input" [(ngModel)]="prompts.exportPrompt.filename">
     <br/><br/>
-    <button (click)="exportPuzzle()">Download game export</button>
-    <button (click)="exportPuzzleCancel()">Cancel</button>
+    <button (click)="exportPuzzle()">Download</button>
+    <button (click)="exportPuzzleCancel()" style="float: right;">Cancel</button>
   </div>
   <div *ngIf="prompts.importPrompt.open">
     <input type="file" (change)="importPuzzleFile($event)" accept="application/json">
     <div *ngIf="prompts.importPrompt.fileImportError">
       {{ prompts.importPrompt.fileImportError }}
     </div>
+    <br/>
+    <br/>
     <button (click)="importPuzzleCancel()">Cancel</button>
   </div>
 </div>
