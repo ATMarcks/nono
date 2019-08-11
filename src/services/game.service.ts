@@ -80,6 +80,7 @@ export class GameService {
     }
   }
 
+  // Save the game, but max only once per second
   saveGame = throttle(() => {
     localStorage.setItem(this.savedGameDataStorageKey, JSON.stringify(this.gameData));
   }, 1000);
@@ -125,6 +126,7 @@ export class GameService {
     this.gameStateChange();
   }
 
+  // Create a new game using random values from given columns and rows
   newGame(cols: number, rows: number, assist: boolean = false): void {
     const newGame: GameData = this.createNewGame(cols, rows, assist);
 
@@ -175,6 +177,7 @@ export class GameService {
     this.gameStateChange();
   }
 
+  // Scaffold a new game object
   createNewGame(cols?: number, rows?: number, assist: boolean = false): GameData {
     return {
       rows,
